@@ -109,6 +109,33 @@
   .motm-res b{color:#0d4f9e}
 
 .demo-note{background:#fff6d9;border-left:3px solid #ffc400;border-radius:0 6px 6px 0;padding:8px 12px;font-size:12px;color:#6b5a1f;margin:10px 0 14px}
+
+  /* ============ MOBILE PASS (internal pages, 22 Jul 2026 sprint) ============
+     All rules below are @media-only — desktop rendering is unchanged. */
+  @media(max-width:640px){
+    .mast-mini{padding:12px 16px 10px;gap:10px}
+    .mast-mini .wordmark{font-size:17px}
+    .mast-mini .back{font-size:10.5px}
+    .rule-mini{margin-bottom:16px}
+    .sheet-wrap{padding:0 12px 32px}
+    .kicker{font-size:11px;padding:4px 11px;margin-left:8px;letter-spacing:.6px;border-radius:6px 6px 0 0}
+    .sheet{padding:16px 14px 18px;border-radius:10px;border-top-width:2px}
+    .sheet h1{font-size:18px}
+    .sheet p{font-size:12.5px}
+    .btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center;padding:8px 16px}
+    footer{font-size:9.5px;padding:12px}
+
+    /* score grid: bigger tap targets, flexible name column */
+    .match-head .team{font-size:15px}
+    .match-head .score{font-size:22px}
+    .vote-row{gap:6px;padding:10px 0}
+    .vote-row .nm{width:auto;min-width:86px;font-size:12px}
+    .scores{gap:3px}
+    .scores button{width:29px;height:40px}
+    .motm-pick button{min-height:40px;padding:6px 10px}
+    .submit-bar .btn{width:100%}
+    .rate-row .nm{width:auto;max-width:96px;flex-shrink:0}
+  }
 </style>
 </head>
 <body>
@@ -229,6 +256,19 @@ try{
       this.classList.add('sel');
     });
   });
+  /* GO-LIVE: paste the ratings Worker base URL here (e.g.
+     "https://ratings.gasdex.co.uk" or the workers.dev URL). While it is
+     empty the ballot runs in demo mode: nothing is counted. Once set,
+     remove the demo note above too. See docs/backend-notes.md. */
+  var RATINGS_ENDPOINT = '';
+  var MATCH_ID = 'gillingham-h-20260711';
+
+  function showResults(){
+    document.getElementById('ballot').style.display = 'none';
+    document.getElementById('results').style.display = 'block';
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
   document.getElementById('submitBtn').addEventListener('click', function(){
     var allRated = Array.prototype.every.call(rows, function(row){
       return row.querySelector('.scores button.sel');
@@ -238,10 +278,32 @@ try{
       document.getElementById('err').style.display = 'inline';
       return;
     }
-    /* prototype: live version posts the ballot to the ratings service here */
-    document.getElementById('ballot').style.display = 'none';
-    document.getElementById('results').style.display = 'block';
-    window.scrollTo({top:0, behavior:'smooth'});
+    document.getElementById('err').style.display = 'none';
+    if(!RATINGS_ENDPOINT){ showResults(); return; }  /* demo mode */
+    var scores = {};
+    rows.forEach(function(row){
+      scores[row.getAttribute('data-player')] =
+        parseInt(row.querySelector('.scores button.sel').getAttribute('data-v'), 10);
+    });
+    var btn = this; btn.disabled = true;
+    fetch(RATINGS_ENDPOINT + '/ballot', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      credentials:'include',
+      body: JSON.stringify({
+        match_id: MATCH_ID,
+        scores: scores,
+        motm: motm.closest('.vote-row').getAttribute('data-player')
+      })
+    }).then(function(r){
+      if(!r.ok) throw new Error('ballot rejected');
+      showResults();
+    }).catch(function(){
+      btn.disabled = false;
+      var err = document.getElementById('err');
+      err.textContent = "Sorry — your ballot didn't send. Please try again in a minute.";
+      err.style.display = 'inline';
+    });
   });
 })();
 

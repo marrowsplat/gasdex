@@ -22,11 +22,14 @@ async function handleRequest(request) {
   const url = new URL(request.url);
   const path = url.pathname;
 
-  // Set CORS headers for all responses (allow site origin)
+  // Set CORS headers for all responses (allow-listed site origins only).
+  // Allow-Credentials is required because the ballot token rides on a cookie.
   const corsHeaders = {
     'Access-Control-Allow-Origin': getSiteOrigin(request),
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Credentials': 'true',
+    'Vary': 'Origin',
     'Cache-Control': 'no-cache'
   };
 
@@ -302,14 +305,21 @@ async function handleGetBallotConfig(url, corsHeaders) {
  * Helpers
  */
 
+const ALLOWED_ORIGINS = [
+  'https://gasdex.co.uk',
+  'https://www.gasdex.co.uk',
+  'https://marrowsplat.github.io',
+];
+
 function getSiteOrigin(request) {
-  const host = request.headers.get('Host') || 'gasdex.co.uk';
-  const protocol = request.headers.get('X-Forwarded-Proto') || 'https';
-  // For local dev, allow localhost:3000; in production, restrict to site domain
-  if (host.includes('localhost') || host.includes('127.0.0.1')) {
-    return `http://${host}`;
-  }
-  return `${protocol}://${host}`;
+  // Echo the requesting page's Origin when it is on the allow-list; this is
+  // what makes cross-origin fetch() from the site work (the worker lives on
+  // its own hostname). Localhost is allowed for development.
+  const origin = request.headers.get('Origin') || '';
+  if (ALLOWED_ORIGINS.includes(origin)) return origin;
+  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return origin;
+  // Non-CORS requests (same-origin or curl) get the canonical site origin.
+  return ALLOWED_ORIGINS[0];
 }
 
 function getBallotToken(request) {
