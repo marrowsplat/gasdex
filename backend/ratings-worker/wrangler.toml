@@ -6,8 +6,8 @@ workers_dev = true
 # KV namespace binding for storing ballots and aggregates
 [[kv_namespaces]]
 binding = "GASDEX_RATINGS"
-id = "YOUR_KV_NAMESPACE_ID"
-preview_id = "YOUR_PREVIEW_KV_NAMESPACE_ID"
+id = "3c1d4303beee49d684a8b40e1261f906"
+preview_id = "2975a305f62449b5b07198c3036dbffe"
 
 # Environment-specific settings
 [env.production]

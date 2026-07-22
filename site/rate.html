@@ -108,8 +108,6 @@
   .motm-res{font-size:11.5px;margin-top:10px;color:#333}
   .motm-res b{color:#0d4f9e}
 
-.demo-note{background:#fff6d9;border-left:3px solid #ffc400;border-radius:0 6px 6px 0;padding:8px 12px;font-size:12px;color:#6b5a1f;margin:10px 0 14px}
-
   /* ============ MOBILE PASS (internal pages, 22 Jul 2026 sprint) ============
      All rules below are @media-only — desktop rendering is unchanged. */
   @media(max-width:640px){
@@ -165,7 +163,6 @@
     <div id="ballot">
       <h1>Rate the players</h1>
       <p>Score every player out of 10, pick your Man of the Match, and press submit. One ballot per fan per match &mdash; voting closes 48 hours after full time.</p>
-      <p class="demo-note"><b>Demo</b> &mdash; the ratings service isn't live yet, so ballots aren't counted. Real voting is coming soon.</p>
       <div class="vote-row" data-player="J. Ward">
         <span class="nm">J. Ward</span><span class="pos">GK</span>
         <span class="scores"><button type="button" data-v="1">1</button><button type="button" data-v="2">2</button><button type="button" data-v="3">3</button><button type="button" data-v="4">4</button><button type="button" data-v="5">5</button><button type="button" data-v="6">6</button><button type="button" data-v="7">7</button><button type="button" data-v="8">8</button><button type="button" data-v="9">9</button><button type="button" data-v="10">10</button></span>
@@ -256,17 +253,53 @@ try{
       this.classList.add('sel');
     });
   });
-  /* GO-LIVE: paste the ratings Worker base URL here (e.g.
-     "https://ratings.gasdex.co.uk" or the workers.dev URL). While it is
-     empty the ballot runs in demo mode: nothing is counted. Once set,
-     remove the demo note above too. See docs/backend-notes.md. */
-  var RATINGS_ENDPOINT = '';
+  /* Live ratings Worker (Cloudflare). Empty string = demo mode. */
+  var RATINGS_ENDPOINT = 'https://gasdex-ratings.gasdex.workers.dev';
   var MATCH_ID = 'gillingham-h-20260711';
 
   function showResults(){
     document.getElementById('ballot').style.display = 'none';
     document.getElementById('results').style.display = 'block';
     window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  /* Replace the placeholder results with the real aggregate from the worker.
+     If the aggregate can't be fetched, fall back to a plain thank-you (never
+     show the sample numbers after a real vote). */
+  function renderAggregate(agg){
+    var res = document.getElementById('results');
+    var thanks = res.querySelector('.thanks');
+    res.querySelectorAll('.rate-row').forEach(function(r){ r.remove(); });
+    var motmEl = res.querySelector('.motm-res');
+    if(!agg || !agg.count){
+      thanks.textContent = 'Thanks \u2014 your ballot has been counted. Averages will appear here as more fans vote.';
+      if(motmEl) motmEl.remove();
+      return;
+    }
+    thanks.textContent = 'Thanks \u2014 your ballot has been counted. ' + agg.count +
+      (agg.count === 1 ? ' fan has' : ' fans have') + ' voted.';
+    var entries = Object.keys(agg.players).map(function(n){ return [n, agg.players[n]]; });
+    entries.sort(function(a,b){ return b[1].avg - a[1].avg; });
+    var motmName = '', motmVotes = -1;
+    entries.forEach(function(e){
+      if(e[1].motm_votes > motmVotes){ motmVotes = e[1].motm_votes; motmName = e[0]; }
+      var row = document.createElement('div'); row.className = 'rate-row';
+      var nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = e[0];
+      var bar = document.createElement('div'); bar.className = 'bar';
+      var fill = document.createElement('i');
+      fill.style.width = Math.max(0, Math.min(100, Math.round(e[1].avg * 10))) + '%';
+      bar.appendChild(fill);
+      var val = document.createElement('span'); val.className = 'val';
+      val.textContent = Number(e[1].avg).toFixed(1);
+      row.appendChild(nm); row.appendChild(bar); row.appendChild(val);
+      motmEl.parentNode.insertBefore(row, motmEl);
+    });
+    var pct = Math.round(100 * motmVotes / agg.count);
+    motmEl.textContent = '';
+    motmEl.appendChild(document.createTextNode('Man of the Match: '));
+    var b = document.createElement('b'); b.textContent = motmName;
+    motmEl.appendChild(b);
+    motmEl.appendChild(document.createTextNode(' (' + pct + '% of votes)'));
   }
 
   document.getElementById('submitBtn').addEventListener('click', function(){
@@ -297,6 +330,11 @@ try{
       })
     }).then(function(r){
       if(!r.ok) throw new Error('ballot rejected');
+      return fetch(RATINGS_ENDPOINT + '/aggregate?match_id=' + encodeURIComponent(MATCH_ID))
+        .then(function(a){ return a.ok ? a.json() : null; })
+        .catch(function(){ return null; });
+    }).then(function(agg){
+      renderAggregate(agg);
       showResults();
     }).catch(function(){
       btn.disabled = false;
