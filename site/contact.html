@@ -92,8 +92,6 @@
     font-weight:700;font-size:13px;margin-bottom:12px}
   .err{color:#c0392b;font-size:11.5px;font-weight:700;display:none;margin-left:12px}
 
-.demo-note{background:#fff6d9;border-left:3px solid #ffc400;border-radius:0 6px 6px 0;padding:8px 12px;font-size:12px;color:#6b5a1f;margin:10px 0 14px}
-
   /* ============ MOBILE PASS (internal pages, 22 Jul 2026 sprint) ============
      All rules below are @media-only — desktop rendering is unchanged. */
   @media(max-width:640px){
@@ -134,7 +132,6 @@
     <div id="form">
       <h1>Should we include something?</h1>
       <p>Let us know if there's a Rovers site, podcast or YouTube channel we should be listing, a link that's died, a result that's wrong, or maybe even a whole new section we should add.</p>
-      <p class="demo-note"><b>Demo</b> &mdash; this form isn't connected yet, so messages aren't sent. A working form is coming soon.</p>
 
       <label for="c-topic">What's it about?</label>
       <select id="c-topic">
@@ -176,10 +173,8 @@ try{
 }catch(e){}
 
 
-/* GO-LIVE: paste the form-service endpoint URL here (e.g. Formspree
-   "https://formspree.io/f/XXXXXXXX"). While it is empty the form runs in
-   demo mode: nothing is sent. Once set, remove the demo note above too. */
-var FORM_ENDPOINT = '';
+/* Live form endpoint (Formspree). Empty string = demo mode. */
+var FORM_ENDPOINT = 'https://formspree.io/f/mjgneovw';
 
 (function(){
   var btn = document.getElementById('sendBtn');

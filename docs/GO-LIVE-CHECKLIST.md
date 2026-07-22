@@ -5,23 +5,19 @@ need accounts + an endpoint URL pasted in. Until then every form/ballot runs
 in **demo mode** (the `FORM_ENDPOINT` / `RATINGS_ENDPOINT` constants are empty
 strings, so nothing is sent and the demo notes stay accurate).
 
-## 1. Contact + report forms (~10 minutes, Formspree free tier)
+## 1. Contact + report forms — ✅ DONE (22 Jul 2026)
 
 Formspree's free tier (50 submissions/month, no backend to run) is the
 recommended start; a Cloudflare Worker + email routing is the free-forever
 upgrade path if volume grows.
 
-- [ ] Create a Formspree account and add **two forms**: "GasDex contact" and
-      "GasDex match reports" (separate forms keep the inbox sortable).
-- [ ] Copy each form's endpoint URL (`https://formspree.io/f/XXXXXXXX`).
-- [ ] Paste them into the `FORM_ENDPOINT` constant in the inline script of:
-      - `site/contact.html` (contact form)
-      - `site/submit.html` (match reports)
-- [ ] Delete the `.demo-note` paragraph from each page (the `<p
-      class="demo-note">…</p>` line).
-- [ ] Commit + push; test a real submission on the live site (both the
-      success path and — by pasting a junk endpoint temporarily — the error
-      path if you're feeling thorough).
+- [x] Formspree account created; two forms added ("GasDex contact",
+      "GasDex match reports").
+- [x] Endpoints pasted into `FORM_ENDPOINT` on contact + submit pages.
+- [x] Demo notes removed from both pages (rate.html keeps its note until
+      the ratings worker ships).
+- [ ] Test a real submission on the live site after deploy (fill the
+      contact form, check it arrives in the Formspree inbox/email).
 
 Both forms POST JSON with `Accept: application/json`, which Formspree
 supports natively (no redirect; the page shows its own confirmation).
