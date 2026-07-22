@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Build output (generated per CI run, not committed)
+# Note: out/index.html is built fresh each time from template + data/
+# out/ directory itself may exist locally but is rebuilt by tools/build_site.py
+out/
+
+# Feed data (regenerated per CI run; only the *-history.json rolling caches are persisted)
+# Rationale: news.json, club.json, youtube.json, results.json are outputs of the
+# feed fetchers and change frequently. They're not committed because:
+# 1. They're regenerated from live feeds on every build
+# 2. They're point-in-time snapshots with no history value
+# 3. They would cause constant merge conflicts in CI
+# 4. Size: unnecessary repository bloat
+# EXCEPTION: data/results-history.json AND data/news-history.json MUST be
+# committed (rolling caches — never delete)
+data/news.json
+data/club.json
+data/youtube.json
+data/results.json
+
+# Temporary & local
+*.tmp
+*.bak
+.env
+.env.local
+secrets/
+*.log
+
+# Project working notes — local-only
+
+CLAUDE.md
+DECISIONS.md
+ROADMAP.md
+
+# Superseded design-history files — kept locally,
+# deliberately not in the repo.
+prototypes/
+tools/build_variants.py
+tools/build_internal_pages.py

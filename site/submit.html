@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Submit your own Bristol Rovers match report to GasDex — reviewed by a human, then published for fellow Gasheads.">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/favicon-180.png">
+<title>Submit a match report | GasDex</title>
+<style>
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background-color:#0e0e10;
+    background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 2px,transparent 2px 14px),
+                     repeating-linear-gradient(-45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px);
+    color:#ddd;font-family:Verdana,Geneva,Tahoma,sans-serif;font-size:13px;line-height:1.6;
+  }
+  a{text-decoration:none;transition:color .15s ease, background .15s ease}
+  .mast-mini{max-width:840px;margin:0 auto;padding:16px 22px 12px;display:flex;align-items:center;gap:12px}
+  .crest-mini{width:34px;height:34px;border-radius:50%;flex-shrink:0;
+    background:conic-gradient(#0d4f9e 0 90deg,#fff 90deg 180deg,#0d4f9e 180deg 270deg,#fff 270deg 360deg);
+    border:2px solid #fff;box-shadow:0 0 0 2px #0d4f9e}
+  .mast-mini .wordmark{font-size:19px;color:#4db8ff}
+  .mast-mini .wordmark b{color:#fff}
+  .mast-mini a:hover .wordmark, .mast-mini a:hover .wordmark b{color:#ffc400}
+  .mast-mini .home-link{display:flex;align-items:center;gap:12px}
+  .mast-mini .back{margin-left:auto;font-size:11.5px;color:#8a8a90}
+  .mast-mini .back a{color:#4db8ff}
+  .mast-mini .back a:hover{color:#ffc400}
+  .rule-mini{height:3px;border-top:2px solid #0d4f9e;border-bottom:1px solid #ffc400;max-width:840px;margin:0 auto 22px}
+  .sheet-wrap{max-width:840px;margin:0 auto;padding:0 22px 40px}
+  .kicker{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+    color:#fff;background:linear-gradient(180deg,#125db8,#0d4f9e);padding:5px 14px;
+    border-radius:8px 8px 0 0;margin-left:12px;box-shadow:0 -2px 4px rgba(0,0,0,.35)}
+  .sheet{background:linear-gradient(180deg,#fdfdfe,#ececee);border:1px solid #b9b9be;border-top:3px solid #0d4f9e;
+    border-radius:12px;box-shadow:0 3px 8px rgba(0,0,0,.6);padding:22px 26px 26px;color:#1a1a1c}
+  .sheet a{color:#0d4f9e;font-weight:600}
+  .sheet a:hover{color:#d6a300}
+  .sheet h1{font-size:21px;color:#1a1a1c;margin:2px 0 12px;line-height:1.3}
+  .sheet p{margin-bottom:12px;font-size:13.5px}
+  .sheet h3{font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#0d4f9e;margin:18px 0 8px}
+  .note{font-size:11.5px;color:#6c6c72}
+  .btn{display:inline-block;text-align:center;padding:8px 22px;border-radius:8px;font-weight:700;font-size:13px;
+    background:#0d4f9e;color:#fff !important;border:none;cursor:pointer;font-family:inherit}
+  .btn:hover{background:#d6a300}
+  footer{text-align:center;color:#77777d;font-size:10.5px;padding:18px}
+  body.bg-navy{background-color:#0a1826;
+    background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 2px,transparent 2px 14px),
+                     repeating-linear-gradient(-45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px)}
+  body.bg-flood{background-color:#08131f;
+    background-image:radial-gradient(ellipse 90% 55% at 50% -10%,rgba(23,94,181,.35),transparent 60%),
+                     repeating-linear-gradient(45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px);
+    background-attachment:fixed}
+  body.bg-quarters{background-color:#0b1a2b;
+    background-image:conic-gradient(rgba(255,255,255,.035) 0 90deg,transparent 90deg 180deg,rgba(255,255,255,.035) 180deg 270deg,transparent 270deg 360deg);
+    background-size:340px 340px;background-attachment:fixed}
+  body.bg-fade{background:linear-gradient(180deg,#0d3d75 0,#0a2444 240px,#0a1420 720px,#070c12 100%);background-attachment:fixed}
+  body.bg-slate{background-color:#22242a;
+    background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px)}
+  body.bg-light{background-color:#ccd4dd;
+    background-image:repeating-linear-gradient(45deg,rgba(13,79,158,.05) 0 2px,transparent 2px 14px)}
+  body.bg-light .mast-mini .wordmark{color:#0d4f9e}
+  body.bg-light .mast-mini .wordmark b{color:#062845}
+  body.bg-light .mast-mini .back{color:#5c6b80}
+  body.bg-light footer{color:#5c6b80}
+  body.bg-teletext{background-color:#000;
+    background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 2px)}
+  body.bg-teletext .mast-mini .wordmark{color:#ffc400}
+  body.bg-teletext .mast-mini .wordmark b{color:#fff}
+  body.bg-teletext .mast-mini .back{color:#888}
+  body.bg-teletext .rule-mini{border-top-color:#ffc400;border-bottom-color:#0d4f9e}
+  body.bg-teletext .kicker{background:linear-gradient(180deg,#ffc400,#e6b000);color:#000}
+  body.bg-teletext .sheet{background:linear-gradient(180deg,#f5f5f0,#e8e8e0);border-color:#888;border-top-color:#0d4f9e}
+  body.bg-teletext footer{color:#888}
+
+
+  label{display:block;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#0d4f9e;margin:14px 0 4px}
+  input[type=text],input[type=email],select,textarea{
+    width:100%;padding:8px 10px;border:1px solid #b9b9be;border-radius:8px;background:#fff;
+    font-family:inherit;font-size:13px;color:#1a1a1c}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:#0d4f9e;box-shadow:0 0 0 2px rgba(13,79,158,.18)}
+  textarea{min-height:220px;resize:vertical;line-height:1.6}
+  .hint{font-size:10.5px;color:#6c6c72;margin-top:3px}
+  .rules{background:#f3f0e2;border:1px solid #d6c98a;border-radius:8px;padding:10px 14px;font-size:12px;color:#5a4d1a;margin:16px 0}
+  .rules b{color:#3f3612}
+  .agree{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:#333;margin:14px 0}
+  .agree input{margin-top:2px}
+  #done{display:none}
+  .thanks{background:#e7f4ec;border:1px solid #1e8e5a;border-radius:8px;padding:12px 16px;color:#14663f;
+    font-weight:700;font-size:13px;margin-bottom:12px}
+  .err{color:#c0392b;font-size:11.5px;font-weight:700;display:none;margin-left:12px}
+
+</style>
+</head>
+<body>
+
+<div class="mast-mini">
+  <a class="home-link" href="index.html" title="Back to the index">
+    <span class="crest-mini"></span>
+    <span class="wordmark"><b>Gas</b>Dex</span>
+  </a>
+  <span class="back"><a href="index.html">&larr; Back to the index</a></span>
+</div>
+<div class="rule-mini"></div>
+
+<div class="sheet-wrap">
+  <span class="kicker">Submit a Match Report</span>
+  <div class="sheet">
+
+    <div id="form">
+      <h1>Submit your match report</h1>
+      <p>Were you there? Tell the rest of us what it was really like. The best reports capture what the highlights can't &mdash; the mood on the terrace, the moment the game turned, the walk home.</p>
+
+      <div class="rules"><b>House rules:</b> reports are reviewed before publishing. We don't publish personal abuse of players, staff or other fans, anything defamatory, or anything that would embarrass your nan. Strong opinions about the football itself are actively encouraged.</div>
+
+      <label for="f-name">Display name</label>
+      <input type="text" id="f-name" placeholder="e.g. GasHead72">
+      <div class="hint">Shown with your report. Nicknames welcome.</div>
+
+      <label for="f-email">Email</label>
+      <input type="email" id="f-email" placeholder="you@example.com">
+      <div class="hint">Never published &mdash; only used to let you know when your report goes up.</div>
+
+      <label for="f-match">Match</label>
+      <select id="f-match">
+        <option>Bristol Rovers 0&ndash;1 Gillingham (H) &mdash; Sat 11 Jul</option>
+        <option>Barrow 1&ndash;2 Bristol Rovers (A) &mdash; Sat 4 Jul</option>
+        <option>Bristol Rovers 1&ndash;1 Notts County (H) &mdash; Tue 30 Jun</option>
+        <option>Bristol Rovers 2&ndash;0 Tranmere (H) &mdash; Sat 27 Jun</option>
+        <option>Crewe 2&ndash;2 Bristol Rovers (A) &mdash; Sat 20 Jun</option>
+      </select>
+
+      <label for="f-title">Report title</label>
+      <input type="text" id="f-title" placeholder='e.g. "Robbed at the Mem"'>
+
+      <label for="f-body">Your report</label>
+      <textarea id="f-body" placeholder="What happened, how it felt, and whose fault it was..."></textarea>
+      <div class="hint">Around 200&ndash;800 words works best. Plain text &mdash; we'll handle the formatting.</div>
+
+      <div class="agree">
+        <input type="checkbox" id="f-agree">
+        <span>I've read the house rules and I'm happy for GasDex to publish this report (with light edits for typos if needed).</span>
+      </div>
+
+      <button class="btn" id="sendBtn" type="button">Send it in</button>
+      <span class="err" id="err">Please fill in every field and tick the box.</span>
+    </div>
+
+    <div id="done">
+      <h1>Report received &mdash; thank you!</h1>
+      <div class="thanks">Your report is in the review queue. If it's a keeper (most are), it'll appear on the index within a day or two and we'll drop you an email.</div>
+      <p>In the meantime: <a href="rate.html">have you rated the players yet?</a></p>
+      <p><a href="index.html">&larr; Back to the index</a></p>
+    </div>
+
+  </div>
+</div>
+
+<footer>GasDex &middot; unofficial Bristol Rovers aggregator &middot; sample content prototype</footer>
+
+<script>
+
+try{
+  var saved = localStorage.getItem('gasdex-bg');
+  if(saved) document.body.className = saved;
+}catch(e){}
+
+
+(function(){
+  document.getElementById('sendBtn').addEventListener('click', function(){
+    var ok = ['f-name','f-email','f-title','f-body'].every(function(id){
+      return document.getElementById(id).value.trim() !== '';
+    }) && document.getElementById('f-agree').checked;
+    if(!ok){ document.getElementById('err').style.display = 'inline'; return; }
+    /* prototype: live version emails the submission to the site owner here */
+    document.getElementById('form').style.display = 'none';
+    document.getElementById('done').style.display = 'block';
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+})();
+
+</script>
+</body>
+</html>

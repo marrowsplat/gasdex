@@ -1,0 +1,21 @@
+name = "gasdex-ratings"
+main = "worker.js"
+compatibility_date = "2024-06-01"
+workers_dev = true
+
+# KV namespace binding for storing ballots and aggregates
+[[kv_namespaces]]
+binding = "GASDEX_RATINGS"
+id = "YOUR_KV_NAMESPACE_ID"
+preview_id = "YOUR_PREVIEW_KV_NAMESPACE_ID"
+
+# Environment-specific settings
+[env.production]
+routes = [
+  { pattern = "ratings.gasdex.co.uk/*", zone_name = "gasdex.co.uk" }
+]
+
+[env.staging]
+routes = [
+  { pattern = "ratings-staging.gasdex.co.uk/*", zone_name = "gasdex.co.uk" }
+]

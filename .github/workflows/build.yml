@@ -1,0 +1,130 @@
+name: Build & Deploy GasDex
+
+on:
+  # Run on schedule: every 3 hours
+  schedule:
+    - cron: '0 */3 * * *'
+  # Allow manual trigger
+  workflow_dispatch:
+  # Run on push to main
+  push:
+    branches:
+      - main
+
+# Prevent concurrent runs overlapping
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history needed for results cache
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Fetch News
+        id: news
+        timeout-minutes: 2
+        continue-on-error: true
+        run: |
+          python3 tools/feeds/fetch_news.py
+
+      - name: Fetch Club Announcements
+        id: club
+        timeout-minutes: 2
+        continue-on-error: true
+        run: |
+          python3 tools/feeds/fetch_club.py
+
+      - name: Fetch YouTube
+        id: youtube
+        timeout-minutes: 2
+        continue-on-error: true
+        run: |
+          python3 tools/feeds/fetch_youtube.py
+
+      - name: Fetch Results & Fixtures
+        id: results
+        timeout-minutes: 2
+        continue-on-error: true
+        run: |
+          python3 tools/feeds/fetch_results.py
+
+      - name: Build site
+        run: |
+          python3 tools/build_site.py
+
+      - name: Copy internal pages to output
+        run: |
+          mkdir -p out
+          cp site/report-example.html out/
+          cp site/rate.html out/
+          cp site/submit.html out/
+          cp site/about.html out/
+          # archive-news.html is RENDERED by build_site.py (do not copy the static sample over it)
+          cp site/archive-reports.html out/
+          cp site/404.html out/
+          cp site/contact.html out/
+          mkdir -p out/assets
+          cp site/assets/*.png out/assets/
+
+      - name: Validate output
+        run: |
+          python3 tools/validate.py out/*.html
+
+      - name: Commit results cache
+        # Only commit if there were changes (cache update)
+        if: always()
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add data/results-history.json
+          git add data/news-history.json || true  # may not exist until first live build
+          git diff --cached --quiet || git commit -m "chore: update rolling caches [skip ci]"
+
+      - name: Push changes
+        if: always()
+        run: |
+          git push origin main || true
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: out/
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Build summary
+        if: always()
+        run: |
+          echo "## GasDex Build Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Feed | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| News | ${{ steps.news.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Club | ${{ steps.club.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| YouTube | ${{ steps.youtube.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Results | ${{ steps.results.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Site deployed:** [View live](https://pages.github.com/)" >> $GITHUB_STEP_SUMMARY

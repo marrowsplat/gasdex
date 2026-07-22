@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="About GasDex, the unofficial fan-run Bristol Rovers aggregator: how the site works, the fan content, and the small print.">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/favicon-180.png">
+<title>About | GasDex</title>
+<style>
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background-color:#0e0e10;
+    background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 2px,transparent 2px 14px),
+                     repeating-linear-gradient(-45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px);
+    color:#ddd;font-family:Verdana,Geneva,Tahoma,sans-serif;font-size:13px;line-height:1.6;
+  }
+  a{text-decoration:none;transition:color .15s ease, background .15s ease}
+  .mast-mini{max-width:840px;margin:0 auto;padding:16px 22px 12px;display:flex;align-items:center;gap:12px}
+  .crest-mini{width:34px;height:34px;border-radius:50%;flex-shrink:0;
+    background:conic-gradient(#0d4f9e 0 90deg,#fff 90deg 180deg,#0d4f9e 180deg 270deg,#fff 270deg 360deg);
+    border:2px solid #fff;box-shadow:0 0 0 2px #0d4f9e}
+  .mast-mini .wordmark{font-size:19px;color:#4db8ff}
+  .mast-mini .wordmark b{color:#fff}
+  .mast-mini a:hover .wordmark, .mast-mini a:hover .wordmark b{color:#ffc400}
+  .mast-mini .home-link{display:flex;align-items:center;gap:12px}
+  .mast-mini .back{margin-left:auto;font-size:11.5px;color:#8a8a90}
+  .mast-mini .back a{color:#4db8ff}
+  .mast-mini .back a:hover{color:#ffc400}
+  .rule-mini{height:3px;border-top:2px solid #0d4f9e;border-bottom:1px solid #ffc400;max-width:840px;margin:0 auto 22px}
+  .sheet-wrap{max-width:840px;margin:0 auto;padding:0 22px 40px}
+  .kicker{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+    color:#fff;background:linear-gradient(180deg,#125db8,#0d4f9e);padding:5px 14px;
+    border-radius:8px 8px 0 0;margin-left:12px;box-shadow:0 -2px 4px rgba(0,0,0,.35)}
+  .sheet{background:linear-gradient(180deg,#fdfdfe,#ececee);border:1px solid #b9b9be;border-top:3px solid #0d4f9e;
+    border-radius:12px;box-shadow:0 3px 8px rgba(0,0,0,.6);padding:22px 26px 26px;color:#1a1a1c}
+  .sheet a{color:#0d4f9e;font-weight:600}
+  .sheet a:hover{color:#d6a300}
+  .sheet h1{font-size:21px;color:#1a1a1c;margin:2px 0 12px;line-height:1.3}
+  .sheet p{margin-bottom:12px;font-size:13.5px}
+  .sheet h3{font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#0d4f9e;margin:18px 0 8px}
+  .note{font-size:11.5px;color:#6c6c72}
+  .btn{display:inline-block;text-align:center;padding:8px 22px;border-radius:8px;font-weight:700;font-size:13px;
+    background:#0d4f9e;color:#fff !important;border:none;cursor:pointer;font-family:inherit}
+  .btn:hover{background:#d6a300}
+  footer{text-align:center;color:#77777d;font-size:10.5px;padding:18px}
+  body.bg-navy{background-color:#0a1826;
+    background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 2px,transparent 2px 14px),
+                     repeating-linear-gradient(-45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px)}
+  body.bg-flood{background-color:#08131f;
+    background-image:radial-gradient(ellipse 90% 55% at 50% -10%,rgba(23,94,181,.35),transparent 60%),
+                     repeating-linear-gradient(45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px);
+    background-attachment:fixed}
+  body.bg-quarters{background-color:#0b1a2b;
+    background-image:conic-gradient(rgba(255,255,255,.035) 0 90deg,transparent 90deg 180deg,rgba(255,255,255,.035) 180deg 270deg,transparent 270deg 360deg);
+    background-size:340px 340px;background-attachment:fixed}
+  body.bg-fade{background:linear-gradient(180deg,#0d3d75 0,#0a2444 240px,#0a1420 720px,#070c12 100%);background-attachment:fixed}
+  body.bg-slate{background-color:#22242a;
+    background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px)}
+  body.bg-light{background-color:#ccd4dd;
+    background-image:repeating-linear-gradient(45deg,rgba(13,79,158,.05) 0 2px,transparent 2px 14px)}
+  body.bg-light .mast-mini .wordmark{color:#0d4f9e}
+  body.bg-light .mast-mini .wordmark b{color:#062845}
+  body.bg-light .mast-mini .back{color:#5c6b80}
+  body.bg-light footer{color:#5c6b80}
+  body.bg-teletext{background-color:#000;
+    background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 2px)}
+  body.bg-teletext .mast-mini .wordmark{color:#ffc400}
+  body.bg-teletext .mast-mini .wordmark b{color:#fff}
+  body.bg-teletext .mast-mini .back{color:#888}
+  body.bg-teletext .rule-mini{border-top-color:#ffc400;border-bottom-color:#0d4f9e}
+  body.bg-teletext .kicker{background:linear-gradient(180deg,#ffc400,#e6b000);color:#000}
+  body.bg-teletext .sheet{background:linear-gradient(180deg,#f5f5f0,#e8e8e0);border-color:#888;border-top-color:#0d4f9e}
+  body.bg-teletext footer{color:#888}
+
+
+</style>
+</head>
+<body>
+
+<div class="mast-mini">
+  <a class="home-link" href="index.html" title="Back to the index">
+    <span class="crest-mini"></span>
+    <span class="wordmark"><b>Gas</b>Dex</span>
+  </a>
+  <span class="back"><a href="index.html">&larr; Back to the index</a></span>
+</div>
+<div class="rule-mini"></div>
+
+<div class="sheet-wrap">
+  <span class="kicker">About GasDex</span>
+  <div class="sheet">
+
+    <h1>About GasDex</h1>
+    <p>GasDex is an unofficial, fan-run home page for Bristol Rovers &mdash; everything worth knowing about the Gas, gathered onto one fast page. News from every outlet, official club announcements, YouTube highlights and podcasts, results, fixtures, and the bits the fans make themselves: match reports from the terraces and player ratings after every game.</p>
+
+    <h3>How it works</h3>
+    <p>The site looks after itself. Feeds are checked and the page rebuilds automatically every few hours, around the clock, whether anyone's watching or not. There's no editorial team and no publishing schedule &mdash; if something Rovers-related happens, it shows up here shortly afterwards. The one human touch: fan match reports are read by an actual person before they're published.</p>
+
+    <h3>The fan content</h3>
+    <p>After every match, fans can <a href="rate.html">rate the players</a> (one ballot per fan, closes 48 hours after full time) and <a href="submit.html">submit a match report</a>. Ratings are aggregated and published automatically; reports are reviewed first &mdash; see the house rules on the submission page. Over a season these build into something no other site has: a running record of what it was actually like to follow Bristol Rovers, written by the people who were there.</p>
+
+    <h3>Should we include something?</h3>
+    <p>If there's a Rovers site, podcast, or channel we should be listing &mdash; or a feed has gone quiet &mdash; <a href="contact.html">drop us a line</a>. The links directory is the one bit of the site a human curates, and recommendations are always welcome.</p>
+
+    <h3>The small print</h3>
+    <p class="note">GasDex is not affiliated with Bristol Rovers FC. All club names and trademarks belong to their owners. Match data via TheSportsDB. Headlines and videos link to their original publishers &mdash; we aggregate, we don't republish. Fan reports are the views of their authors, not of GasDex (though between us, they're usually right).</p>
+
+    <p style="margin-top:16px"><a href="index.html">&larr; Back to the index</a></p>
+
+  </div>
+</div>
+
+<footer>GasDex &middot; unofficial Bristol Rovers aggregator &middot; sample content prototype</footer>
+
+<script>
+
+try{
+  var saved = localStorage.getItem('gasdex-bg');
+  if(saved) document.body.className = saved;
+}catch(e){}
+
+
+</script>
+</body>
+</html>

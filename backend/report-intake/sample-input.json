@@ -1,0 +1,48 @@
+{
+  "match_id": "gillingham-h-20260711",
+  "title": "Robbed at the Mem",
+  "author": "GasHead72",
+  "date_submitted": "2026-07-11T21:40:00Z",
+  "match_team_home": "Bristol Rovers",
+  "match_team_away": "Gillingham",
+  "match_score_home": 0,
+  "match_score_away": 1,
+  "match_date": "Sat 11 Jul 2026",
+  "match_venue": "The Memorial Stadium",
+  "match_attendance": 9114,
+  "body": "There are defeats you deserve and defeats you simply cannot explain, and this was emphatically the second kind. Anyone who left Horfield on Saturday grumbling about the scoreline clearly wasn't watching the same game as the rest of us — Rovers battered them. Battered them. And lost.\n\nFrom the first whistle we pressed them into their own half and kept them there. Sotiriou hit the bar inside ten minutes, Hutchinson forced a save that their keeper knew nothing about, and Omochere — bless him — found every way imaginable not to score. Three big chances in the first half alone. On another day he walks off with the match ball; on this one he trudged off looking like a man who'd run over his own dog.\n\nTheir goal, when it came, was everything this sport shouldn't be: a hopeful punt, a deflection off someone's shin, and their lad couldn't miss from four yards. One shot on target. One. The xG will make grim reading — 2.31 to 0.42 according to the Gauge — and for once the numbers and the eyes agree completely.\n\nIf there's consolation, it's that performances like this don't stay unrewarded for long. Ward barely touched the ball and still looked our most composed player when he did. The football is there. The finishing will come. Grimsby next Saturday feels winnable — it had better be.",
+  "ratings": {
+    "J. Ward": {
+      "avg": 8.2,
+      "motm_votes": 131
+    },
+    "R. Sotiriou": {
+      "avg": 7.1,
+      "motm_votes": 42
+    },
+    "I. Hutchinson": {
+      "avg": 6.8,
+      "motm_votes": 28
+    },
+    "C. Taylor": {
+      "avg": 6.4,
+      "motm_votes": 8
+    },
+    "M. Forbes": {
+      "avg": 6.3,
+      "motm_votes": 3
+    },
+    "T. Moore": {
+      "avg": 6.1,
+      "motm_votes": 1
+    },
+    "L. McCormick": {
+      "avg": 5.7,
+      "motm_votes": 1
+    },
+    "P. Omochere": {
+      "avg": 5.5,
+      "motm_votes": 0
+    }
+  }
+}

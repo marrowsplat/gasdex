@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A fan-written Bristol Rovers match report on GasDex — the view from the terraces, by the people who were there.">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/favicon-180.png">
+<title>"Robbed at the Mem" — Gillingham (H) | GasDex fan reports</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background-color:#0e0e10;
+    background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 2px,transparent 2px 14px),
+                     repeating-linear-gradient(-45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px);
+    color:#ddd;font-family:Verdana,Geneva,Tahoma,sans-serif;font-size:13px;line-height:1.6;
+  }
+  a{text-decoration:none;transition:color .15s ease, background .15s ease}
+
+  /* ---- compact masthead: one line, doubles as the way home ---- */
+  .mast-mini{max-width:840px;margin:0 auto;padding:16px 22px 12px;display:flex;align-items:center;gap:12px}
+  .crest-mini{width:34px;height:34px;border-radius:50%;flex-shrink:0;
+    background:conic-gradient(#0d4f9e 0 90deg,#fff 90deg 180deg,#0d4f9e 180deg 270deg,#fff 270deg 360deg);
+    border:2px solid #fff;box-shadow:0 0 0 2px #0d4f9e}
+  .mast-mini .wordmark{font-size:19px;color:#4db8ff}
+  .mast-mini .wordmark b{color:#fff}
+  .mast-mini a:hover .wordmark, .mast-mini a:hover .wordmark b{color:#ffc400}
+  .mast-mini .home-link{display:flex;align-items:center;gap:12px}
+  .mast-mini .back{margin-left:auto;font-size:11.5px;color:#8a8a90}
+  .mast-mini .back a{color:#4db8ff}
+  .mast-mini .back a:hover{color:#ffc400}
+  .rule-mini{height:3px;border-top:2px solid #0d4f9e;border-bottom:1px solid #ffc400;max-width:840px;margin:0 auto 22px}
+
+  /* ---- the opened-up card ---- */
+  .sheet-wrap{max-width:840px;margin:0 auto;padding:0 22px 40px}
+  .kicker{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+    color:#fff;background:linear-gradient(180deg,#125db8,#0d4f9e);padding:5px 14px;
+    border-radius:8px 8px 0 0;margin-left:12px;box-shadow:0 -2px 4px rgba(0,0,0,.35)}
+  .sheet{background:linear-gradient(180deg,#fdfdfe,#ececee);border:1px solid #b9b9be;border-top:3px solid #0d4f9e;
+    border-radius:12px;box-shadow:0 3px 8px rgba(0,0,0,.6);padding:22px 26px 26px;color:#1a1a1c}
+  .sheet a{color:#0d4f9e;font-weight:600}
+  .sheet a:hover{color:#d6a300}
+
+  /* match context header */
+  .match-head{border-bottom:2px solid #0d4f9e;padding-bottom:14px;margin-bottom:16px}
+  .match-head .score-line{display:flex;justify-content:center;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .match-head .team{font-size:17px;font-weight:700;color:#123f77}
+  .match-head .score{font-size:26px;font-weight:800;color:#c0392b;font-variant-numeric:tabular-nums}
+  .match-head .meta{text-align:center;color:#6c6c72;font-size:11.5px;margin-top:6px}
+
+  h1.report-title{font-size:21px;color:#1a1a1c;margin:2px 0 4px;line-height:1.3}
+  .byline{color:#6c6c72;font-size:11.5px;margin-bottom:16px}
+  .byline b{color:#0d4f9e}
+
+  .report-body p{margin-bottom:13px;font-size:13.5px}
+  .report-body p:first-of-type::first-letter{font-size:200%;font-weight:800;color:#0d4f9e;float:left;line-height:1;padding-right:6px}
+
+  /* ratings block reused from index */
+  .ratings{margin-top:22px;border-top:1px solid #c9c9ce;padding-top:16px}
+  .ratings h3{font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#0d4f9e;margin-bottom:8px}
+  .rate-note{font-size:11.5px;color:#444;margin-bottom:8px}
+  .rate-row{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:12px}
+  .rate-row .nm{width:92px;font-weight:600;color:#123f77}
+  .bar{flex:1;height:9px;border-radius:5px;overflow:hidden;background:#d3d3d8}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,#0d4f9e,#4db8ff)}
+  .rate-row .val{width:28px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+  .motm{font-size:11.5px;margin-top:8px;color:#333}
+  .motm b{color:#0d4f9e}
+
+  /* prev/next reports */
+  .report-nav{display:flex;justify-content:flex-end;gap:12px;margin-top:20px;font-size:12px;flex-wrap:wrap}
+  .report-nav a{color:#0d4f9e;font-weight:700}
+  .report-nav a:hover{color:#d6a300}
+
+  footer{text-align:center;color:#77777d;font-size:10.5px;padding:18px}
+
+  /* ---- background themes (shared with index; visitor's choice is honoured) ---- */
+  body.bg-navy{background-color:#0a1826;
+    background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 2px,transparent 2px 14px),
+                     repeating-linear-gradient(-45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px)}
+  body.bg-flood{background-color:#08131f;
+    background-image:radial-gradient(ellipse 90% 55% at 50% -10%,rgba(23,94,181,.35),transparent 60%),
+                     repeating-linear-gradient(45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px);
+    background-attachment:fixed}
+  body.bg-quarters{background-color:#0b1a2b;
+    background-image:conic-gradient(rgba(255,255,255,.035) 0 90deg,transparent 90deg 180deg,rgba(255,255,255,.035) 180deg 270deg,transparent 270deg 360deg);
+    background-size:340px 340px;background-attachment:fixed}
+  body.bg-fade{background:linear-gradient(180deg,#0d3d75 0,#0a2444 240px,#0a1420 720px,#070c12 100%);background-attachment:fixed}
+  body.bg-slate{background-color:#22242a;
+    background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px)}
+  body.bg-light{background-color:#ccd4dd;
+    background-image:repeating-linear-gradient(45deg,rgba(13,79,158,.05) 0 2px,transparent 2px 14px)}
+  body.bg-light .mast-mini .wordmark{color:#0d4f9e}
+  body.bg-light .mast-mini .wordmark b{color:#062845}
+  body.bg-light .mast-mini .back{color:#5c6b80}
+  body.bg-light footer{color:#5c6b80}
+  body.bg-teletext{background-color:#000;
+    background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 2px)}
+  body.bg-teletext .mast-mini .wordmark{color:#ffc400}
+  body.bg-teletext .mast-mini .wordmark b{color:#fff}
+  body.bg-teletext .mast-mini .back{color:#888}
+  body.bg-teletext .rule-mini{border-top-color:#ffc400;border-bottom-color:#0d4f9e}
+  body.bg-teletext .kicker{background:linear-gradient(180deg,#ffc400,#e6b000);color:#000}
+  body.bg-teletext .sheet{background:linear-gradient(180deg,#f5f5f0,#e8e8e0);border-color:#888;border-top-color:#0d4f9e}
+  body.bg-teletext footer{color:#888}
+</style>
+</head>
+<body>
+
+<div class="mast-mini">
+  <a class="home-link" href="index.html" title="Back to the index">
+    <span class="crest-mini"></span>
+    <span class="wordmark"><b>Gas</b>Dex</span>
+  </a>
+  <span class="back"><a href="index.html">&larr; Back to the index</a></span>
+</div>
+<div class="rule-mini"></div>
+
+<div class="sheet-wrap">
+  <span class="kicker">Fan Match Report</span>
+  <div class="sheet">
+
+    <div class="match-head">
+      <div class="score-line">
+        <span class="team">Bristol Rovers</span>
+        <span class="score">0 &ndash; 1</span>
+        <span class="team">Gillingham</span>
+      </div>
+      <div class="meta">League Two &middot; The Memorial Stadium &middot; Sat 11 Jul 2026 &middot; Att. 9,114</div>
+    </div>
+
+    <h1 class="report-title">&ldquo;Robbed at the Mem&rdquo;</h1>
+    <div class="byline">by <b>GasHead72</b> &middot; submitted Sat 11 Jul, 21:40 &middot; published after review</div>
+
+    <div class="report-body">
+      <p>There are defeats you deserve and defeats you simply cannot explain, and this was emphatically the second kind. Anyone who left Horfield on Saturday grumbling about the scoreline clearly wasn't watching the same game as the rest of us &mdash; Rovers battered them. Battered them. And lost.</p>
+      <p>From the first whistle we pressed them into their own half and kept them there. Sotiriou hit the bar inside ten minutes, Hutchinson forced a save that their keeper knew nothing about, and Omochere &mdash; bless him &mdash; found every way imaginable not to score. Three big chances in the first half alone. On another day he walks off with the match ball; on this one he trudged off looking like a man who'd run over his own dog.</p>
+      <p>Their goal, when it came, was everything this sport shouldn't be: a hopeful punt, a deflection off someone's shin, and their lad couldn't miss from four yards. One shot on target. One. The xG will make grim reading &mdash; 2.31 to 0.42 according to the Gauge &mdash; and for once the numbers and the eyes agree completely.</p>
+      <p>If there's consolation, it's that performances like this don't stay unrewarded for long. Ward barely touched the ball and still looked our most composed player when he did. The football is there. The finishing will come. Grimsby next Saturday feels winnable &mdash; it had better be.</p>
+    </div>
+
+    <div class="ratings">
+      <h3>Fan Player Ratings &mdash; this match</h3>
+      <div class="rate-note">214 fans voted</div>
+      <div class="rate-row"><span class="nm">J. Ward</span><div class="bar"><i style="width:82%"></i></div><span class="val">8.2</span></div>
+      <div class="rate-row"><span class="nm">Sotiriou</span><div class="bar"><i style="width:71%"></i></div><span class="val">7.1</span></div>
+      <div class="rate-row"><span class="nm">Hutchinson</span><div class="bar"><i style="width:68%"></i></div><span class="val">6.8</span></div>
+      <div class="rate-row"><span class="nm">C. Taylor</span><div class="bar"><i style="width:64%"></i></div><span class="val">6.4</span></div>
+      <div class="rate-row"><span class="nm">Omochere</span><div class="bar"><i style="width:55%"></i></div><span class="val">5.5</span></div>
+      <div class="motm">Man of the Match: <b>Jed Ward</b> (61% of votes)</div>
+    </div>
+
+    <div class="report-nav">
+      <a href="archive-reports.html">All fan reports &rarr;</a>
+    </div>
+
+  </div>
+</div>
+
+<footer>GasDex &middot; unofficial Bristol Rovers aggregator &middot; fan reports are reviewed before publishing &middot; sample content prototype</footer>
+
+<script>
+/* honour the visitor's background choice from the index */
+try{
+  var saved = localStorage.getItem('gasdex-bg');
+  if(saved) document.body.className = saved;
+}catch(e){}
+</script>
+</body>
+</html>

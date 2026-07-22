@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Contact GasDex — suggest a Rovers site, podcast or channel, report a broken link or feed, or send general feedback.">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/favicon-180.png">
+<title>Contact us | GasDex</title>
+<style>
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background-color:#0e0e10;
+    background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 2px,transparent 2px 14px),
+                     repeating-linear-gradient(-45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px);
+    color:#ddd;font-family:Verdana,Geneva,Tahoma,sans-serif;font-size:13px;line-height:1.6;
+  }
+  a{text-decoration:none;transition:color .15s ease, background .15s ease}
+  .mast-mini{max-width:840px;margin:0 auto;padding:16px 22px 12px;display:flex;align-items:center;gap:12px}
+  .crest-mini{width:34px;height:34px;border-radius:50%;flex-shrink:0;
+    background:conic-gradient(#0d4f9e 0 90deg,#fff 90deg 180deg,#0d4f9e 180deg 270deg,#fff 270deg 360deg);
+    border:2px solid #fff;box-shadow:0 0 0 2px #0d4f9e}
+  .mast-mini .wordmark{font-size:19px;color:#4db8ff}
+  .mast-mini .wordmark b{color:#fff}
+  .mast-mini a:hover .wordmark, .mast-mini a:hover .wordmark b{color:#ffc400}
+  .mast-mini .home-link{display:flex;align-items:center;gap:12px}
+  .mast-mini .back{margin-left:auto;font-size:11.5px;color:#8a8a90}
+  .mast-mini .back a{color:#4db8ff}
+  .mast-mini .back a:hover{color:#ffc400}
+  .rule-mini{height:3px;border-top:2px solid #0d4f9e;border-bottom:1px solid #ffc400;max-width:840px;margin:0 auto 22px}
+  .sheet-wrap{max-width:840px;margin:0 auto;padding:0 22px 40px}
+  .kicker{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+    color:#fff;background:linear-gradient(180deg,#125db8,#0d4f9e);padding:5px 14px;
+    border-radius:8px 8px 0 0;margin-left:12px;box-shadow:0 -2px 4px rgba(0,0,0,.35)}
+  .sheet{background:linear-gradient(180deg,#fdfdfe,#ececee);border:1px solid #b9b9be;border-top:3px solid #0d4f9e;
+    border-radius:12px;box-shadow:0 3px 8px rgba(0,0,0,.6);padding:22px 26px 26px;color:#1a1a1c}
+  .sheet a{color:#0d4f9e;font-weight:600}
+  .sheet a:hover{color:#d6a300}
+  .sheet h1{font-size:21px;color:#1a1a1c;margin:2px 0 12px;line-height:1.3}
+  .sheet p{margin-bottom:12px;font-size:13.5px}
+  .sheet h3{font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#0d4f9e;margin:18px 0 8px}
+  .note{font-size:11.5px;color:#6c6c72}
+  .btn{display:inline-block;text-align:center;padding:8px 22px;border-radius:8px;font-weight:700;font-size:13px;
+    background:#0d4f9e;color:#fff !important;border:none;cursor:pointer;font-family:inherit}
+  .btn:hover{background:#d6a300}
+  footer{text-align:center;color:#77777d;font-size:10.5px;padding:18px}
+  body.bg-navy{background-color:#0a1826;
+    background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 2px,transparent 2px 14px),
+                     repeating-linear-gradient(-45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px)}
+  body.bg-flood{background-color:#08131f;
+    background-image:radial-gradient(ellipse 90% 55% at 50% -10%,rgba(23,94,181,.35),transparent 60%),
+                     repeating-linear-gradient(45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px);
+    background-attachment:fixed}
+  body.bg-quarters{background-color:#0b1a2b;
+    background-image:conic-gradient(rgba(255,255,255,.035) 0 90deg,transparent 90deg 180deg,rgba(255,255,255,.035) 180deg 270deg,transparent 270deg 360deg);
+    background-size:340px 340px;background-attachment:fixed}
+  body.bg-fade{background:linear-gradient(180deg,#0d3d75 0,#0a2444 240px,#0a1420 720px,#070c12 100%);background-attachment:fixed}
+  body.bg-slate{background-color:#22242a;
+    background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px)}
+  body.bg-light{background-color:#ccd4dd;
+    background-image:repeating-linear-gradient(45deg,rgba(13,79,158,.05) 0 2px,transparent 2px 14px)}
+  body.bg-light .mast-mini .wordmark{color:#0d4f9e}
+  body.bg-light .mast-mini .wordmark b{color:#062845}
+  body.bg-light .mast-mini .back{color:#5c6b80}
+  body.bg-light footer{color:#5c6b80}
+  body.bg-teletext{background-color:#000;
+    background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 2px)}
+  body.bg-teletext .mast-mini .wordmark{color:#ffc400}
+  body.bg-teletext .mast-mini .wordmark b{color:#fff}
+  body.bg-teletext .mast-mini .back{color:#888}
+  body.bg-teletext .rule-mini{border-top-color:#ffc400;border-bottom-color:#0d4f9e}
+  body.bg-teletext .kicker{background:linear-gradient(180deg,#ffc400,#e6b000);color:#000}
+  body.bg-teletext .sheet{background:linear-gradient(180deg,#f5f5f0,#e8e8e0);border-color:#888;border-top-color:#0d4f9e}
+  body.bg-teletext footer{color:#888}
+
+
+  label{display:block;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#0d4f9e;margin:14px 0 4px}
+  input[type=text],input[type=email],select,textarea{
+    width:100%;padding:8px 10px;border:1px solid #b9b9be;border-radius:8px;background:#fff;
+    font-family:inherit;font-size:13px;color:#1a1a1c}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:#0d4f9e;box-shadow:0 0 0 2px rgba(13,79,158,.18)}
+  textarea{min-height:140px;resize:vertical;line-height:1.6}
+  .hint{font-size:10.5px;color:#6c6c72;margin-top:3px}
+  .rules{background:#f3f0e2;border:1px solid #d6c98a;border-radius:8px;padding:10px 14px;font-size:12px;color:#5a4d1a;margin:16px 0}
+  .rules b{color:#3f3612}
+  .agree{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:#333;margin:14px 0}
+  .agree input{margin-top:2px}
+  #done{display:none}
+  .thanks{background:#e7f4ec;border:1px solid #1e8e5a;border-radius:8px;padding:12px 16px;color:#14663f;
+    font-weight:700;font-size:13px;margin-bottom:12px}
+  .err{color:#c0392b;font-size:11.5px;font-weight:700;display:none;margin-left:12px}
+
+</style>
+</head>
+<body>
+
+<div class="mast-mini">
+  <a class="home-link" href="index.html" title="Back to the index">
+    <span class="crest-mini"></span>
+    <span class="wordmark"><b>Gas</b>Dex</span>
+  </a>
+  <span class="back"><a href="index.html">&larr; Back to the index</a></span>
+</div>
+<div class="rule-mini"></div>
+
+<div class="sheet-wrap">
+  <span class="kicker">Contact Us</span>
+  <div class="sheet">
+
+    <div id="form">
+      <h1>Should we include something?</h1>
+      <p>Let us know if there's a Rovers site, podcast or YouTube channel we should be listing, a link that's died, a result that's wrong, or maybe even a whole new section we should add.</p>
+
+      <label for="c-topic">What's it about?</label>
+      <select id="c-topic">
+        <option>Suggest a site, podcast or channel</option>
+        <option>A correction or a broken link/feed</option>
+        <option>General feedback</option>
+      </select>
+
+      <label for="c-msg">Your message</label>
+      <textarea id="c-msg" placeholder="If you're suggesting a site or channel, a link helps..."></textarea>
+
+      <label for="c-name">Name</label>
+      <input type="text" id="c-name" placeholder="Optional">
+
+      <label for="c-email">Email</label>
+      <input type="email" id="c-email" placeholder="Optional — only if you'd like a reply">
+      <div class="hint">Never published, never shared, never added to anything.</div>
+
+      <button class="btn" id="sendBtn" type="button">Send it</button>
+      <span class="err" id="err">Please write a message first.</span>
+    </div>
+
+    <div id="done">
+      <h1>Message sent &mdash; thank you!</h1>
+      <div class="thanks">It's landed in the GasDex inbox. If you left an email and it needs a reply, you'll get one.</div>
+      <p><a href="index.html">&larr; Back to the index</a></p>
+    </div>
+
+  </div>
+</div>
+
+<footer>GasDex &middot; unofficial Bristol Rovers aggregator &middot; sample content prototype</footer>
+
+<script>
+
+try{
+  var saved = localStorage.getItem('gasdex-bg');
+  if(saved) document.body.className = saved;
+}catch(e){}
+
+
+(function(){
+  document.getElementById('sendBtn').addEventListener('click', function(){
+    if(document.getElementById('c-msg').value.trim() === ''){
+      document.getElementById('err').style.display = 'inline'; return;
+    }
+    /* prototype: at go-live this posts to the form service (e.g. Formspree endpoint) */
+    document.getElementById('form').style.display = 'none';
+    document.getElementById('done').style.display = 'block';
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+})();
+
+</script>
+</body>
+</html>

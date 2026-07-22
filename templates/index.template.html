@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="GasDex — everything Bristol Rovers on one fast page: news, club announcements, results, fixtures, YouTube, fan match reports and player ratings.">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/favicon-180.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="GasDex — Everything Bristol Rovers, on one page">
+<meta property="og:description" content="News, club announcements, results, fixtures, YouTube, fan match reports and player ratings — all in one place.">
+<meta property="og:url" content="https://gasdex.co.uk/">
+<meta property="og:image" content="https://gasdex.co.uk/assets/share-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<title>GasDex — Everything Bristol Rovers, on one page</title>
+<style>
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  .cols{max-width:1180px;margin:0 auto;padding:0 22px;column-count:4;column-gap:16px}
+  @media(max-width:1000px){.cols{column-count:3}}
+  @media(max-width:760px){.cols{column-count:2}}
+  @media(max-width:520px){.cols{column-count:1}}
+  .box{break-inside:avoid;width:100%;margin:0 0 16px;position:relative}
+  .box ul{list-style:none}
+  .box li{padding:3.5px 0;display:flex;gap:7px;align-items:baseline}
+  .box li .ico{flex-shrink:0;width:16px;text-align:center}
+  .score-row,.fix-row{display:flex;justify-content:space-between;gap:8px;padding:3.5px 0}
+  .sc{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .opp{font-weight:600}
+  .rate-row{display:flex;align-items:center;gap:8px;padding:3px 0}
+  .rate-row .nm{width:92px;font-weight:600}
+  .bar{flex:1;height:9px;border-radius:5px;overflow:hidden}
+  .bar i{display:block;height:100%}
+  .rate-row .val{width:28px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+  .btn{display:block;text-align:center;margin-top:9px;padding:6px;border-radius:8px;font-weight:700}
+  a{text-decoration:none;transition:color .15s ease, background .15s ease}
+
+
+  body{
+    background-color:#0e0e10;
+    background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 2px,transparent 2px 14px),
+                     repeating-linear-gradient(-45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px);
+    color:#ddd;font-family:Verdana,Geneva,Tahoma,sans-serif;font-size:13px;line-height:1.55;
+  }
+  .masthead{display:flex;align-items:center;gap:18px;padding:22px 26px 16px;max-width:1180px;margin:0 auto}
+  .crest{height:74px;flex-shrink:0}
+  .crest img{height:74px;width:auto;display:block}
+  .crest .logo-light{display:none}
+  body.bg-light .crest .logo-dark{display:none}
+  body.bg-light .crest .logo-light{display:block}
+  h1{font-size:30px;font-weight:400;color:#4db8ff;letter-spacing:.5px}
+  h1 b{font-weight:700;color:#fff}
+  .intro{font-size:12.5px;color:#ccc;margin-top:4px}
+  .intro a{color:#4db8ff}
+  .intro a:hover{color:#ffc400}
+  .masthead-actions{display:flex;gap:12px;margin-left:auto;align-items:center}
+  .share-btn{display:inline-block;padding:4px 10px;font-size:11px;font-weight:700;background:#0d4f9e;color:#fff;border-radius:6px;border:none;cursor:pointer;font-family:inherit;text-transform:uppercase;letter-spacing:.5px;transition:background .15s ease}
+  .share-btn:hover{background:#ffc400;color:#1a1a1a}
+  .updated{font-size:11px;color:#8a8a90;margin-top:5px}
+  .updated b{color:#ddd}
+  .newdot{color:#ffc400;font-weight:700}
+  .rule{height:4px;border-top:2px solid #0d4f9e;border-bottom:1px solid #ffc400;max-width:1180px;margin:6px auto 18px}
+
+  /* Option D: heading as a gold kicker tab sitting on top of the card */
+  .box{background:none;border:none;box-shadow:none;overflow:visible;color:#1a1a1c;font-size:12.5px}
+  .box h2{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+    color:#fff;background:linear-gradient(180deg,#125db8,#0d4f9e);padding:5px 14px;
+    border-radius:8px 8px 0 0;margin-left:12px;box-shadow:0 -2px 4px rgba(0,0,0,.35)}
+  /* long headings: wrap to two lines but keep the tab hugging the text */
+  .box h2.stack{width:min-content;white-space:normal;line-height:1.3;text-align:left}
+  .inner{background:linear-gradient(180deg,#fdfdfe,#ececee);border:1px solid #b9b9be;border-top:3px solid #0d4f9e;
+    border-radius:12px;box-shadow:0 3px 8px rgba(0,0,0,.6);padding:10px 13px 12px}
+  .box a{color:#0d4f9e;font-weight:600}
+  .box a:hover{color:#d6a300}
+  a.ext::after{content:" \2197";font-size:11px;opacity:.85;font-weight:700}
+  .when{color:#6c6c72;font-size:10.5px;font-weight:400;margin-left:4px;white-space:nowrap}
+  .when2{color:#6c6c72;font-size:11px;white-space:nowrap}
+  .tag-new{background:#ffc400;color:#1a1a1a;font-size:9px;font-weight:800;border-radius:3px;padding:1px 4px;margin-left:5px;vertical-align:middle;letter-spacing:.5px}
+  .opp{color:#123f77}
+  .w{color:#1e8e5a}.d{color:#a07800}.l{color:#c0392b}
+  .rate-note{font-size:11.5px;color:#444;margin-bottom:7px;text-align:center}
+  .rate-row{font-size:12px}
+  .rate-row .nm{color:#123f77}
+  .bar{background:#d3d3d8}
+  .bar i{background:linear-gradient(90deg,#0d4f9e,#4db8ff)}
+  .motm{font-size:11.5px;text-align:center;margin-top:7px;color:#333}
+  .motm b{color:#0d4f9e}
+  .btn{background:#0d4f9e;color:#fff !important;font-size:12px}
+  .btn:hover{background:#d6a300}
+  .pending{font-size:10.5px;color:#6c6c72;text-align:center;margin-top:6px;font-style:italic}
+  .strip{background:#ffc400;color:#1a1a1a;text-align:center;padding:9px 14px;font-size:12.5px;font-weight:700;margin-top:26px}
+  .strip a{color:#0d4f9e;text-decoration:underline}
+  .strip a:hover{color:#c0392b}
+  footer{text-align:center;color:#77777d;font-size:10.5px;padding:16px}
+
+  /* box reorder controls (visible only while arranging) */
+  .box-controls{position:absolute;top:0;right:0;z-index:10;display:none;flex-direction:column;gap:2px}
+  .box.arranging .box-controls{display:flex}
+  .reorder-btn{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;background:#0d4f9e;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;transition:background .15s ease}
+  .reorder-btn:hover{background:#ffc400;color:#1a1a1a}
+  .box.arranging .inner{outline:2px dashed #0d4f9e;outline-offset:2px;opacity:.92}
+
+  /* see-all box footer */
+  .see-all-link{display:block;margin-top:10px;padding-top:10px;border-top:1px solid #ddd;font-size:11.5px;font-weight:700;color:#0d4f9e;text-align:right}
+  .see-all-link:hover{color:#d6a300}
+
+  /* share confirmation toast */
+  .share-toast{position:fixed;bottom:80px;right:20px;background:#0d4f9e;color:#fff;padding:10px 16px;border-radius:6px;font-size:11px;font-weight:700;opacity:0;transition:opacity .2s ease;pointer-events:none;z-index:100}
+  .share-toast.show{opacity:1}
+
+  /* ================= background options (prototype switcher) ================= */
+  /* 1: Charcoal (current) is the body default above */
+
+  /* 2: Navy Night — deep Rovers navy, same subtle diagonal texture */
+  body.bg-navy{
+    background-color:#0a1826;
+    background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 2px,transparent 2px 14px),
+                     repeating-linear-gradient(-45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px);
+  }
+
+  /* 3: Floodlight — navy radial glow from the top, like evening kick-off */
+  body.bg-flood{
+    background-color:#08131f;
+    background-image:radial-gradient(ellipse 90% 55% at 50% -10%,rgba(23,94,181,.35),transparent 60%),
+                     repeating-linear-gradient(45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px);
+    background-attachment:fixed;
+  }
+
+  /* 4: Quartered Watermark — huge faint shirt quarters behind everything */
+  body.bg-quarters{
+    background-color:#0b1a2b;
+    background-image:conic-gradient(rgba(255,255,255,.035) 0 90deg,transparent 90deg 180deg,rgba(255,255,255,.035) 180deg 270deg,transparent 270deg 360deg);
+    background-size:340px 340px;
+    background-attachment:fixed;
+  }
+
+  /* 5: Blue Fade — vertical gradient, Rovers blue sinking to black */
+  body.bg-fade{
+    background:linear-gradient(180deg,#0d3d75 0,#0a2444 240px,#0a1420 720px,#070c12 100%);
+    background-attachment:fixed;
+  }
+
+  /* 6: Slate — softer warm dark grey, less stark than charcoal */
+  body.bg-slate{
+    background-color:#22242a;
+    background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px);
+  }
+
+  /* 7: Daylight — light grey-blue; boxes pop by shadow instead of contrast */
+  body.bg-light{background-color:#ccd4dd;
+    background-image:repeating-linear-gradient(45deg,rgba(13,79,158,.05) 0 2px,transparent 2px 14px)}
+  body.bg-light h1{color:#0d4f9e}
+  body.bg-light h1 b{color:#062845}
+  body.bg-light .intro{color:#3c4a66}
+  body.bg-light .intro a{color:#0d4f9e}
+  body.bg-light .updated{color:#5c6b80}
+  body.bg-light .updated b{color:#1c2942}
+  body.bg-light footer{color:#5c6b80}
+  body.bg-light .box .inner{box-shadow:0 3px 9px rgba(20,40,70,.35)}
+
+  /* 8: Teletext — black with retro CRT scan-line texture; gold/blue swap */
+  body.bg-teletext{
+    background-color:#000;
+    background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 2px);
+  }
+  body.bg-teletext h1{color:#ffc400}
+  body.bg-teletext h1 b{color:#fff}
+  body.bg-teletext .intro{color:#ccc}
+  body.bg-teletext .intro a{color:#4db8ff}
+  body.bg-teletext .updated{color:#888}
+  body.bg-teletext .updated b{color:#ddd}
+  body.bg-teletext .rule{border-top-color:#ffc400;border-bottom-color:#0d4f9e}
+  body.bg-teletext .box h2{background:linear-gradient(180deg,#ffc400,#e6b000);color:#000;text-shadow:none}
+  body.bg-teletext .inner{background:linear-gradient(180deg,#f5f5f0,#e8e8e0);border-color:#888;border-top-color:#0d4f9e}
+  body.bg-teletext .box a{color:#0d4f9e}
+  body.bg-teletext footer{color:#888}
+  body.bg-teletext .btn{background:#0d4f9e;border:1px solid #0d4f9e}
+  body.bg-teletext .btn:hover{background:#ffc400;color:#000 !important;border-color:#ffc400}
+  body.bg-teletext .bg-picker .toggle,
+  body.bg-teletext .arrange-picker .toggle{background:linear-gradient(180deg,#ffc400,#e6b000);color:#000;border-color:#0d4f9e}
+  body.bg-teletext .bg-picker .toggle:hover,
+  body.bg-teletext .arrange-picker .toggle:hover{background:#000;color:#ffc400;border-color:#ffc400}
+  body.bg-teletext .bg-picker.open .toggle,
+  body.bg-teletext .arrange-picker.open .toggle{background:#ffc400;color:#000;border-color:#ffc400}
+  body.bg-teletext .bg-picker .panel,
+  body.bg-teletext .arrange-picker .panel{background:rgba(0,0,0,.98);border-color:#ffc400}
+  body.bg-teletext .bg-picker button,
+  body.bg-teletext .arrange-picker .reset-btn{background:#000;color:#ffc400;border-color:#666}
+  body.bg-teletext .bg-picker button:hover{background:#0d4f9e;color:#fff;border-color:#0d4f9e}
+  body.bg-teletext .bg-picker button.on{background:#ffc400;color:#000;border-color:#ffc400}
+
+  /* background chooser — permanent site feature */
+  .bg-picker{position:fixed;bottom:0;right:16px;z-index:99;width:190px}
+  .bg-picker .panel{
+    background:rgba(10,20,34,.95);border:1px solid #2b4a6f;border-bottom:none;
+    border-radius:10px 10px 0 0;padding:9px 11px;box-shadow:0 -4px 14px rgba(0,0,0,.5);
+    display:none;
+  }
+  .bg-picker.open .panel{display:block}
+  .bg-picker button{display:block;width:100%;margin:3px 0;padding:5px 10px;font-size:11px;font-weight:700;
+    font-family:inherit;border:1px solid #2b4a6f;border-radius:6px;background:#102640;color:#cfe0f0;cursor:pointer;text-align:left}
+  .bg-picker button:hover{background:#0d4f9e;color:#fff}
+  .bg-picker button.on{background:#ffc400;color:#1a1a1a;border-color:#ffc400}
+  .bg-picker .toggle{
+    display:block;width:100%;margin:0;text-align:center;
+    background:linear-gradient(180deg,#125db8,#0d4f9e);color:#fff;border:1px solid #2b4a6f;border-bottom:none;
+    border-radius:10px 10px 0 0;padding:6px 14px;font-size:11px;font-weight:800;
+    letter-spacing:.8px;text-transform:uppercase;box-shadow:0 -2px 8px rgba(0,0,0,.45);
+  }
+  .bg-picker .toggle:hover{background:#ffc400;color:#1a1a1a}
+  .bg-picker.open .toggle{border-radius:0;background:#ffc400;color:#1a1a1a}
+  .bg-picker .toggle .arrow{font-size:9px;margin-left:6px}
+
+  /* arrange (move boxes) picker — second bottom tab, left of the background picker */
+  .arrange-picker{position:fixed;bottom:0;right:216px;z-index:99;width:190px}
+  .arrange-picker .toggle{
+    display:block;width:100%;margin:0;text-align:center;
+    background:linear-gradient(180deg,#125db8,#0d4f9e);color:#fff;border:1px solid #2b4a6f;border-bottom:none;
+    border-radius:10px 10px 0 0;padding:6px 14px;font-size:11px;font-weight:800;
+    letter-spacing:.8px;text-transform:uppercase;box-shadow:0 -2px 8px rgba(0,0,0,.45);cursor:pointer;font-family:inherit;
+  }
+  .arrange-picker .toggle:hover{background:#ffc400;color:#1a1a1a}
+  .arrange-picker.open .toggle{border-radius:0;background:#ffc400;color:#1a1a1a}
+  .arrange-picker .toggle .arrow{font-size:9px;margin-left:6px}
+  .arrange-picker .panel{
+    background:rgba(10,20,34,.95);border:1px solid #2b4a6f;border-bottom:none;
+    border-radius:10px 10px 0 0;padding:9px 11px;box-shadow:0 -4px 14px rgba(0,0,0,.5);
+    display:none;
+  }
+  .arrange-picker.open .panel{display:block}
+  .arrange-picker .hint{font-size:10px;color:#8fa9c4;margin-bottom:4px;line-height:1.4}
+  .arrange-picker .reset-btn{display:block;width:100%;margin:3px 0;padding:5px 10px;font-size:11px;font-weight:700;
+    font-family:inherit;border:1px solid #2b4a6f;border-radius:6px;background:#102640;color:#cfe0f0;cursor:pointer;text-align:left}
+  .arrange-picker .reset-btn:hover{background:#c0392b;color:#fff}
+
+  /* ============ MOBILE PASS (approved 22 Jul 2026: options A, C, E, G) ============
+     All rules below are @media-only — desktop rendering is unchanged. */
+
+  /* Phones (<=640px) */
+  @media(max-width:640px){
+    .cols{padding:0 16px;column-gap:12px}
+
+    /* Option C: masthead stacks vertically, centred; crest 74px -> 60px */
+    .masthead{flex-direction:column;gap:12px;padding:14px 16px 12px;text-align:center}
+    .masthead .crest{height:60px}
+    .masthead .crest img{height:60px}
+    .masthead-actions{margin:2px auto 0}
+    h1{font-size:22px;letter-spacing:.3px}
+    .intro{font-size:11.5px;margin-top:2px}
+    .updated{font-size:10px;margin-top:4px;line-height:1.4}
+    .rule{height:3px;margin:4px auto 14px;max-width:100%}
+
+    /* Heading tabs */
+    .box h2{font-size:11px;padding:4px 11px;margin-left:8px;letter-spacing:.6px;
+      border-radius:6px 6px 0 0;box-shadow:0 -1px 3px rgba(0,0,0,.3)}
+    .box h2.stack{width:auto;line-height:1.2}
+
+    /* Boxes + lists */
+    .inner{padding:8px 10px 10px;border-radius:10px;border-top-width:2px}
+    .box li{padding:2.5px 0;gap:5px;font-size:12px}
+    .box li .ico{width:14px}
+    .when,.when2{font-size:10px}
+    .tag-new{font-size:8px;padding:1px 3px}
+    .see-all-link{font-size:11px}
+
+    /* Score / fixture rows */
+    .score-row,.fix-row{gap:4px;padding:2.5px 0;font-size:12px}
+    .opp{font-weight:600;flex-shrink:1;word-break:break-word}
+    .sc,.when2{flex-shrink:0;white-space:nowrap}
+
+    /* Option G: player names flex instead of fixed 92px */
+    .rate-row{gap:6px;padding:2px 0;font-size:11px}
+    .rate-row .nm{width:auto;max-width:70px;flex-shrink:0}
+    .rate-row .val{width:24px}
+    .rate-note{font-size:11px;margin-bottom:5px}
+    .motm{font-size:10.5px;margin-top:5px}
+
+    /* Option E: 44px minimum tap targets (WCAG AAA) */
+    .btn{padding:8px 10px;font-size:11px;margin-top:8px;min-height:44px;display:flex;
+      align-items:center;justify-content:center}
+    .pending{font-size:10px;margin-top:5px}
+
+    /* Strip + footer */
+    .strip{padding:7px 12px;font-size:11.5px;margin-top:20px}
+    .strip a{font-size:11px}
+    footer{font-size:9.5px;padding:12px}
+
+    /* Option A: background picker moves bottom-LEFT and shrinks;
+       arrange picker mirrors it bottom-RIGHT so the two tabs never collide */
+    .bg-picker{width:160px;right:auto;left:8px}
+    .bg-picker button{font-size:10px;padding:4px 8px;margin:2px 0}
+    .bg-picker .toggle{padding:5px 10px;font-size:10px}
+    .bg-picker .toggle .arrow{font-size:8px;margin-left:4px}
+    .arrange-picker{width:160px;right:8px}
+    .arrange-picker .toggle{padding:5px 10px;font-size:10px}
+    .arrange-picker .toggle .arrow{font-size:8px;margin-left:4px}
+    .arrange-picker .reset-btn{font-size:10px;padding:4px 8px;margin:2px 0}
+    .share-toast{bottom:64px;right:12px}
+  }
+
+  /* Tablets (641–1000px) — gentle tightening only */
+  @media(min-width:641px) and (max-width:1000px){
+    .masthead{padding:18px 22px 14px;gap:14px}
+    .cols{padding:0 18px;column-gap:14px}
+    .box h2{font-size:11.5px;margin-left:10px}
+    .inner{padding:9px 12px}
+  }
+
+</style>
+</head>
+<body>
+<div class="masthead"><div class="crest"><img class="logo-dark" src="assets/logo-mark-dark.png" alt=""><img class="logo-light" src="assets/logo-mark-light.png" alt=""></div>
+  <div style="flex:1">
+    <h1><b>Gas</b>Dex</h1>
+    <div class="intro">Everything Bristol Rovers, on one page. Should we include something? <a href="contact.html">Let us know</a>.</div>
+    <div class="updated">Last updated: <b><!--UPDATED--></b> &middot; refreshes every 3 hours &middot; <span class="tag-new">NEW</span> = new since yesterday</div>
+  </div>
+  <div class="masthead-actions">
+    <button class="share-btn" id="shareBtn" type="button">Share</button>
+  </div>
+</div><div class="rule"></div>
+
+<div class="cols" id="colsContainer">
+
+  <div class="box" data-box-id="results">
+    <h2>Latest Results</h2>
+    <div class="box-controls">
+      <button class="reorder-btn" type="button" title="Move up" aria-label="Move this box up" data-dir="up">&#9650;</button>
+      <button class="reorder-btn" type="button" title="Move down" aria-label="Move this box down" data-dir="down">&#9660;</button>
+    </div>
+    <div class="inner">
+    <!--BLOCK:results-->
+    <div class="score-row"><span class="opp">Gillingham (H)</span><span class="sc l">L 0&ndash;1</span></div>
+    <div class="score-row"><span class="opp">Barrow (A)</span><span class="sc w">W 2&ndash;1</span></div>
+    <div class="score-row"><span class="opp">Notts County (H)</span><span class="sc d">D 1&ndash;1</span></div>
+    <div class="score-row"><span class="opp">Tranmere (H)</span><span class="sc w">W 2&ndash;0</span></div>
+    <div class="score-row"><span class="opp">Crewe (A)</span><span class="sc d">D 2&ndash;2</span></div>
+    <!--/BLOCK:results-->
+    </div>
+  </div>
+
+  <div class="box" data-box-id="fixtures">
+    <h2>Next Fixtures</h2>
+    <div class="box-controls">
+      <button class="reorder-btn" type="button" title="Move up" aria-label="Move this box up" data-dir="up">&#9650;</button>
+      <button class="reorder-btn" type="button" title="Move down" aria-label="Move this box down" data-dir="down">&#9660;</button>
+    </div>
+    <div class="inner">
+    <!--BLOCK:fixtures-->
+    <div class="fix-row"><span class="opp">Grimsby (H)</span><span class="when2">Sat 25 Jul, 15:00</span></div>
+    <div class="fix-row"><span class="opp">Salford (A)</span><span class="when2">Tue 28 Jul, 19:45</span></div>
+    <div class="fix-row"><span class="opp">Colchester (H)</span><span class="when2">Sat 1 Aug, 15:00</span></div>
+    <div class="fix-row"><span class="opp">Newport (A)</span><span class="when2">Sat 8 Aug, 15:00</span></div>
+    <!--/BLOCK:fixtures-->
+    </div>
+  </div>
+
+  <div class="box" data-box-id="news">
+    <h2>News</h2>
+    <div class="box-controls">
+      <button class="reorder-btn" type="button" title="Move up" aria-label="Move this box up" data-dir="up">&#9650;</button>
+      <button class="reorder-btn" type="button" title="Move down" aria-label="Move this box down" data-dir="down">&#9660;</button>
+    </div>
+    <div class="inner">
+    <ul>
+    <!--BLOCK:news-->
+      <li><span class="ico">&#128240;</span><div><a href="#" class="ext" target="_blank" rel="noopener">Rovers boss praises &quot;unfair&quot; defeat response</a><span class="tag-new">NEW</span><span class="when">BristolLive &middot; 2h</span></div></li>
+      <li><span class="ico">&#128240;</span><div><a href="#" class="ext" target="_blank" rel="noopener">League Two weekend preview: Grimsby test awaits</a><span class="tag-new">NEW</span><span class="when">BBC Sport &middot; 5h</span></div></li>
+      <li><span class="ico">&#128240;</span><div><a href="#" class="ext" target="_blank" rel="noopener">Sotiriou attracting interest after hot streak</a><span class="when">FLW &middot; 1d</span></div></li>
+      <li><span class="ico">&#128240;</span><div><a href="#" class="ext" target="_blank" rel="noopener">Memorial Stadium redevelopment: latest</a><span class="when">BristolLive &middot; 2d</span></div></li>
+      <li><span class="ico">&#128240;</span><div><a href="#" class="ext" target="_blank" rel="noopener">Fan gallery: best photos from Barrow away</a><span class="when">Bristol Post &middot; 3d</span></div></li>
+    <!--/BLOCK:news-->
+    </ul>
+    <a class="see-all-link" href="archive-news.html">See all news &rarr;</a>
+    </div>
+  </div>
+
+  <div class="box" data-box-id="club">
+    <h2>Club Announcements</h2>
+    <div class="box-controls">
+      <button class="reorder-btn" type="button" title="Move up" aria-label="Move this box up" data-dir="up">&#9650;</button>
+      <button class="reorder-btn" type="button" title="Move down" aria-label="Move this box down" data-dir="down">&#9660;</button>
+    </div>
+    <div class="inner">
+    <ul>
+    <!--BLOCK:club-->
+      <li><span class="ico">&#128309;</span><div><a href="#" class="ext" target="_blank" rel="noopener">Ticket details: Grimsby (H)</a><span class="tag-new">NEW</span><span class="when">6h</span></div></li>
+      <li><span class="ico">&#128309;</span><div><a href="#" class="ext" target="_blank" rel="noopener">U18s friendly result and report</a><span class="when">1d</span></div></li>
+      <li><span class="ico">&#128309;</span><div><a href="#" class="ext" target="_blank" rel="noopener">Community Trust summer camps open</a><span class="when">2d</span></div></li>
+      <li><span class="ico">&#128309;</span><div><a href="#" class="ext" target="_blank" rel="noopener">Away travel: Salford coach bookings</a><span class="when">3d</span></div></li>
+    <!--/BLOCK:club-->
+    </ul>
+    </div>
+  </div>
+
+  <div class="box" data-box-id="ratings">
+    <h2>Fan Player Ratings</h2>
+    <div class="box-controls">
+      <button class="reorder-btn" type="button" title="Move up" aria-label="Move this box up" data-dir="up">&#9650;</button>
+      <button class="reorder-btn" type="button" title="Move down" aria-label="Move this box down" data-dir="down">&#9660;</button>
+    </div>
+    <div class="inner">
+    <div class="rate-note">vs Gillingham (H) &middot; <b>214 fans voted</b></div>
+    <div class="rate-row"><span class="nm">J. Ward</span><div class="bar"><i style="width:82%"></i></div><span class="val">8.2</span></div>
+    <div class="rate-row"><span class="nm">Sotiriou</span><div class="bar"><i style="width:71%"></i></div><span class="val">7.1</span></div>
+    <div class="rate-row"><span class="nm">Hutchinson</span><div class="bar"><i style="width:68%"></i></div><span class="val">6.8</span></div>
+    <div class="rate-row"><span class="nm">C. Taylor</span><div class="bar"><i style="width:64%"></i></div><span class="val">6.4</span></div>
+    <div class="rate-row"><span class="nm">Omochere</span><div class="bar"><i style="width:55%"></i></div><span class="val">5.5</span></div>
+    <div class="motm">Man of the Match: <b>Jed Ward</b> (61% of votes)</div>
+    <a class="btn" href="rate.html">Rate the players &rarr;</a>
+    </div>
+  </div>
+
+  <div class="box" data-box-id="reports">
+    <h2>Fan Match Reports</h2>
+    <div class="box-controls">
+      <button class="reorder-btn" type="button" title="Move up" aria-label="Move this box up" data-dir="up">&#9650;</button>
+      <button class="reorder-btn" type="button" title="Move down" aria-label="Move this box down" data-dir="down">&#9660;</button>
+    </div>
+    <div class="inner">
+    <ul>
+      <li><span class="ico">&#9997;&#65039;</span><div><a href="report-example.html">&quot;Robbed at the Mem&quot; &mdash; Gillingham (H)</a><span class="when">by GasHead72</span></div></li>
+      <li><span class="ico">&#9997;&#65039;</span><div><a href="report-example.html">&quot;Gritty at Holker Street&quot; &mdash; Barrow (A)</a><span class="when">by BlueSince84</span></div></li>
+      <li><span class="ico">&#9997;&#65039;</span><div><a href="report-example.html">&quot;Two points dropped&quot; &mdash; Notts Co (H)</a><span class="when">by PiratePete</span></div></li>
+    </ul>
+    <a class="btn" href="submit.html">Submit your report &rarr;</a>
+    <div class="pending">Reports are reviewed before publishing.</div>
+    <a class="see-all-link" href="archive-reports.html">See all reports &rarr;</a>
+    </div>
+  </div>
+
+  <div class="box" data-box-id="youtube">
+    <h2>YouTube</h2>
+    <div class="box-controls">
+      <button class="reorder-btn" type="button" title="Move up" aria-label="Move this box up" data-dir="up">&#9650;</button>
+      <button class="reorder-btn" type="button" title="Move down" aria-label="Move this box down" data-dir="down">&#9660;</button>
+    </div>
+    <div class="inner">
+    <ul>
+    <!--BLOCK:youtube-->
+      <li><span class="ico">&#9654;&#65039;</span><div><a href="#" class="ext" target="_blank" rel="noopener">HIGHLIGHTS: Rovers 0&ndash;1 Gillingham</a><span class="tag-new">NEW</span><span class="when">Official &middot; 1d</span></div></li>
+      <li><span class="ico">&#9654;&#65039;</span><div><a href="#" class="ext" target="_blank" rel="noopener">Gas Cast #142: transfer window special</a><span class="when">Gas Cast &middot; 2d</span></div></li>
+      <li><span class="ico">&#9654;&#65039;</span><div><a href="#" class="ext" target="_blank" rel="noopener">Matchday vlog: Barrow away trip</a><span class="when">Rovers Vlogs &middot; 4d</span></div></li>
+      <li><span class="ico">&#9654;&#65039;</span><div><a href="#" class="ext" target="_blank" rel="noopener">Every goal from June</a><span class="when">Official &middot; 6d</span></div></li>
+    <!--/BLOCK:youtube-->
+    </ul>
+    </div>
+  </div>
+
+  <div class="box" data-box-id="rovers-sites">
+    <h2>Rovers Sites</h2>
+    <div class="box-controls">
+      <button class="reorder-btn" type="button" title="Move up" aria-label="Move this box up" data-dir="up">&#9650;</button>
+      <button class="reorder-btn" type="button" title="Move down" aria-label="Move this box down" data-dir="down">&#9660;</button>
+    </div>
+    <div class="inner">
+    <ul>
+      <li><span class="ico">&#127760;</span><a href="https://www.bristolrovers.co.uk/" class="ext" target="_blank" rel="noopener">Official Site</a></li>
+      <li><span class="ico">&#128172;</span><a href="https://gasheads.org/" class="ext" target="_blank" rel="noopener">Gasheads Forum</a></li>
+      <li><span class="ico">&#9917;</span><a href="https://www.bbc.co.uk/sport/football/teams/bristol-rovers" class="ext" target="_blank" rel="noopener">BBC Sport: Rovers</a></li>
+      <li><span class="ico">&#128251;</span><a href="https://www.bbc.co.uk/sounds/play/live:bbc_radio_bristol" class="ext" target="_blank" rel="noopener">BBC Radio Bristol</a></li>
+      <li><span class="ico">&#127908;</span><a href="https://listen.gascastpodcast.co.uk/" class="ext" target="_blank" rel="noopener">GasCast Podcast</a></li>
+      <li><span class="ico">&#127897;&#65039;</span><a href="https://www.youtube.com/@TalkingGasPodcast" class="ext" target="_blank" rel="noopener">Talking Gas Podcast</a></li>
+      <li><span class="ico">&#128214;</span><a href="https://en.wikipedia.org/wiki/Bristol_Rovers_F.C." class="ext" target="_blank" rel="noopener">Rovers Wikipedia</a></li>
+      <li><span class="ico">&#127967;&#65039;</span><a href="https://www.bristolrovers.co.uk/memorial-stadium" class="ext" target="_blank" rel="noopener">Memorial Stadium info</a></li>
+    </ul>
+    </div>
+  </div>
+
+  <div class="box" data-box-id="social">
+    <h2>Social</h2>
+    <div class="box-controls">
+      <button class="reorder-btn" type="button" title="Move up" aria-label="Move this box up" data-dir="up">&#9650;</button>
+      <button class="reorder-btn" type="button" title="Move down" aria-label="Move this box down" data-dir="down">&#9660;</button>
+    </div>
+    <div class="inner">
+    <ul>
+      <li><span class="ico">&#120143;</span><a href="https://twitter.com/Official_BRFC" class="ext" target="_blank" rel="noopener">Official X / Twitter</a></li>
+      <li><span class="ico">&#128248;</span><a href="https://www.instagram.com/official_brfc/" class="ext" target="_blank" rel="noopener">Instagram</a></li>
+      <li><span class="ico">&#127925;</span><a href="https://www.tiktok.com/@brfc_official" class="ext" target="_blank" rel="noopener">TikTok</a></li>
+      <li><span class="ico">&#128101;</span><a href="https://www.reddit.com/r/bristolrovers/" class="ext" target="_blank" rel="noopener">r/bristolrovers</a></li>
+      <li><span class="ico">&#128216;</span><a href="https://www.facebook.com/BristolRoversFC" class="ext" target="_blank" rel="noopener">Facebook</a></li>
+    </ul>
+    </div>
+  </div>
+
+</div>
+
+<div class="strip">&#9917; Rate the players from Saturday's match &mdash; <a href="rate.html">vote now, it takes 30 seconds!</a></div>
+<footer>GasDex &middot; unofficial Bristol Rovers aggregator &middot; sample data prototype &middot; Refined with gold kicker tabs (option D)</footer>
+
+<div class="share-toast" id="shareToast" role="status" aria-live="polite">Link copied to clipboard!</div>
+
+<div class="arrange-picker" id="arrangePicker">
+  <button class="toggle" id="arrangeToggle" type="button" aria-expanded="false">Arrange<span class="arrow">▲</span></button>
+  <div class="panel">
+    <div class="hint">Use the &#9650;/&#9660; buttons on each box to reorder. Your layout is remembered.</div>
+    <button class="reset-btn" id="resetOrderBtn" type="button">Reset order</button>
+  </div>
+</div>
+
+<div class="bg-picker" id="bgPicker">
+  <div class="panel">
+    <button data-bg="" class="on" aria-pressed="true">Charcoal</button>
+    <button data-bg="bg-navy" aria-pressed="false">Navy Night</button>
+    <button data-bg="bg-flood" aria-pressed="false">Floodlight</button>
+    <button data-bg="bg-quarters" aria-pressed="false">Quartered</button>
+    <button data-bg="bg-fade" aria-pressed="false">Blue Fade</button>
+    <button data-bg="bg-slate" aria-pressed="false">Slate</button>
+    <button data-bg="bg-light" aria-pressed="false">Daylight</button>
+    <button data-bg="bg-teletext" aria-pressed="false">Teletext</button>
+  </div>
+  <button class="toggle" id="bgToggle" type="button" aria-expanded="false">Background<span class="arrow">▲</span></button>
+</div>
+<script>
+(function(){
+  var picker = document.getElementById('bgPicker');
+  var toggle = document.getElementById('bgToggle');
+  var arrow = toggle.querySelector('.arrow');
+  var buttons = picker.querySelectorAll('.panel button');
+
+  toggle.addEventListener('click', function(){
+    picker.classList.toggle('open');
+    var open = picker.classList.contains('open');
+    arrow.textContent = open ? '▼' : '▲';
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  function apply(bg){
+    document.body.className = bg;
+    buttons.forEach(function(x){
+      var on = x.dataset.bg === bg;
+      x.classList.toggle('on', on);
+      x.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+  }
+
+  buttons.forEach(function(b){
+    b.addEventListener('click', function(){
+      apply(b.dataset.bg);
+      try{ localStorage.setItem('gasdex-bg', b.dataset.bg); }catch(e){}
+    });
+  });
+
+  /* restore visitor's saved choice */
+  try{
+    var saved = localStorage.getItem('gasdex-bg');
+    if(saved !== null) apply(saved);
+  }catch(e){}
+
+  /* ===== share (copy link / native share sheet) ===== */
+  var shareBtn = document.getElementById('shareBtn');
+  var shareToast = document.getElementById('shareToast');
+  shareBtn.addEventListener('click', function(){
+    var shareData = {
+      title: 'GasDex',
+      text: 'Everything Bristol Rovers, on one page.',
+      url: window.location.href
+    };
+    if(navigator.share){
+      navigator.share(shareData).catch(function(){});
+    } else if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(shareData.url).then(function(){
+        shareToast.classList.add('show');
+        setTimeout(function(){ shareToast.classList.remove('show'); }, 2000);
+      }).catch(function(){});
+    }
+  });
+
+  /* ===== box reordering (arrange mode, saved per visitor) ===== */
+  var arrangePicker = document.getElementById('arrangePicker');
+  var arrangeToggle = document.getElementById('arrangeToggle');
+  var arrangeArrow = arrangeToggle.querySelector('.arrow');
+  var resetOrderBtn = document.getElementById('resetOrderBtn');
+  var colsContainer = document.getElementById('colsContainer');
+  var boxes = Array.prototype.slice.call(colsContainer.querySelectorAll('.box'));
+
+  arrangeToggle.addEventListener('click', function(){
+    arrangePicker.classList.toggle('open');
+    var arranging = arrangePicker.classList.contains('open');
+    arrangeArrow.textContent = arranging ? '▼' : '▲';
+    arrangeToggle.setAttribute('aria-expanded', arranging ? 'true' : 'false');
+    boxes.forEach(function(box){ box.classList.toggle('arranging', arranging); });
+  });
+
+  resetOrderBtn.addEventListener('click', function(){
+    try{ localStorage.removeItem('gasdex-order'); }catch(e){}
+    location.reload();
+  });
+
+  function saveOrder(){
+    var order = boxes.map(function(b){ return b.getAttribute('data-box-id'); });
+    try{ localStorage.setItem('gasdex-order', JSON.stringify(order)); }catch(e){}
+  }
+
+  function moveBox(box, dir){
+    var i = boxes.indexOf(box);
+    if(dir === 'up' && i > 0){
+      colsContainer.insertBefore(box, boxes[i - 1]);
+      boxes.splice(i, 1); boxes.splice(i - 1, 0, box);
+      saveOrder();
+    } else if(dir === 'down' && i < boxes.length - 1){
+      colsContainer.insertBefore(boxes[i + 1], box);
+      boxes.splice(i, 1); boxes.splice(i + 1, 0, box);
+      saveOrder();
+    }
+  }
+
+  boxes.forEach(function(box){
+    var up = box.querySelector('[data-dir="up"]');
+    var down = box.querySelector('[data-dir="down"]');
+    if(up) up.addEventListener('click', function(e){ e.stopPropagation(); moveBox(box, 'up'); });
+    if(down) down.addEventListener('click', function(e){ e.stopPropagation(); moveBox(box, 'down'); });
+  });
+
+  /* restore visitor's saved order */
+  try{
+    var savedOrder = localStorage.getItem('gasdex-order');
+    if(savedOrder){
+      JSON.parse(savedOrder).forEach(function(id){
+        var box = colsContainer.querySelector('[data-box-id="' + id + '"]');
+        if(box) colsContainer.appendChild(box);
+      });
+      boxes = Array.prototype.slice.call(colsContainer.querySelectorAll('.box'));
+    }
+  }catch(e){}
+})();
+</script>
+</body>
+</html>

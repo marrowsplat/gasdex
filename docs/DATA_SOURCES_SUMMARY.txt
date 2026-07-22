@@ -1,0 +1,108 @@
+GASDEX DATA SOURCES RESEARCH — SUMMARY
+========================================
+
+RESEARCH COMPLETED: July 19, 2026
+
+KEY FINDINGS:
+=============
+
+1. PRIMARY RECOMMENDATION: API-Football (api-sports.io)
+   - Free tier: 100 requests/day (no credit card needed)
+   - Coverage: 1,200+ leagues including EFL League Two
+   - All endpoints available on free tier (no league gating)
+   - Cost: $0 free or $19/month if volume exceeds
+   - Verdict: BEST FOR GASDEX — reliable, low-friction, proven coverage
+
+2. FALLBACK: football-data.org
+   - Free tier: 12 major leagues (NO League Two)
+   - Paid: €49/month for 25 leagues (League Two available but unconfirmed)
+   - Rate limit: Very generous (10 req/min = 600/hour)
+   - Verdict: Reliable fallback if API-Football fails; costs more
+
+3. AVOID:
+   - SportMonks: €99/month minimum (too expensive for hobby)
+   - FotMob: No official API (ToS violation risk, fragile)
+   - BBC/scraping: Explicit ToS prohibition on automation
+   - TheSportsDB: Community data quality (secondary only)
+
+CRITICAL UNKNOWNS (ACTION ITEMS):
+=================================
+
+1. Bristol Rovers Team ID:
+   - Assumed 234 in fetch_results.py
+   - MUST verify via API-Football /teams endpoint before production
+   - URL: https://api.api-football.com/v3/teams?search=bristol+rovers
+
+2. League Two on football-data.org:
+   - Docs list League Two but tier not specified
+   - Might be in €49/month Standard plan
+   - MUST verify or contact daniel@football-data.org before purchasing
+
+3. API-Football free tier actual capacity:
+   - 100 req/day should cover 3-4 builds/day safely
+   - But if each build needs >20 requests, you'll hit limit at 5+ builds/day
+   - MONITOR real usage after deployment
+
+DELIVERABLES COMPLETED:
+=======================
+
+1. docs/data-sources.md (13KB)
+   - Comprehensive comparison table
+   - Detailed analysis of all 7 providers
+   - Pricing breakdown
+   - Setup instructions
+   - Open questions & caveats clearly marked
+
+2. tools/feeds/fetch_results.py (12KB)
+   - Pluggable Provider base class design
+   - APIFootballProvider implementation (fully stubbed)
+   - SampleProvider (offline, always works)
+   - CLI tool with error handling & fallback logic
+   - Outputs data/results.json in contract schema
+
+3. data/results.json
+   - Sample data generated (5 results, 5 fixtures)
+   - Realistic Bristol Rovers pre-season + League Two 2026-27
+   - Matches exact output contract:
+     {
+       "fetched_at": "<ISO8601 UTC>",
+       "sample": <bool>,
+       "results": [...],
+       "fixtures": [...]
+     }
+
+NEXT STEPS FOR USER:
+====================
+
+IMMEDIATE (before production):
+1. Sign up at https://www.api-football.com/ → grab free API key
+2. Verify Bristol Rovers team ID via their API
+3. Update TEAM_ID in fetch_results.py
+4. Test: export FOOTBALL_API_KEY=<key> && python3 tools/feeds/fetch_results.py
+5. Confirm output matches expected schema
+
+OPTIONAL (for redundancy):
+6. Set up football-data.org fallback (requires €49/month subscription)
+7. Extend fetch_results.py with football-data.org provider
+8. Implement retry logic with dual-fetch
+
+MAINTENANCE:
+- Monitor free tier usage; upgrade if hitting 100 req/day regularly
+- Check data freshness timestamps in output
+- Seasonal close-season handling (pre-season friendlies may be sparse)
+
+COST ESTIMATE:
+==============
+- Minimum: FREE (API-Football free tier)
+- Recommended: $19/month (if volume exceeds free tier)
+- With fallback: $19/month + €49/month (robust setup)
+- Zero-cost option: football-data.org free (12 leagues) + openfootball (historical only)
+
+DATA SCHEMA VALIDATED ✓
+Script tested with:
+- Sample provider (fallback working)
+- Invalid API key (graceful degradation)
+- Syntax validation (Python 3.x compatible)
+- Output schema matches contract
+
+All files ready for integration with site build pipeline.

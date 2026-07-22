@@ -1,0 +1,71 @@
+{
+  "rovers_sites": [
+    {
+      "title": "Official Site",
+      "url": "https://www.bristolrovers.co.uk/",
+      "note": "Bristol Rovers FC official website — news, fixtures, tickets, merchandise, club info"
+    },
+    {
+      "title": "Gasheads Forum",
+      "url": "https://gasheads.org/",
+      "note": "Active fan community forum — match chat, transfers, fan discussions; regularly updated with 2026/27 content"
+    },
+    {
+      "title": "BBC Sport: Rovers",
+      "url": "https://www.bbc.co.uk/sport/football/teams/bristol-rovers",
+      "note": "BBC Sport Bristol Rovers team page — news, scores, fixtures, tables (replaced broken bbcthree URL; the maintainer chose BOTH BBC links, 22 Jul 2026)"
+    },
+    {
+      "title": "BBC Radio Bristol",
+      "url": "https://www.bbc.co.uk/sounds/play/live:bbc_radio_bristol",
+      "note": "BBC Radio Bristol live on BBC Sounds — match commentary and local coverage"
+    },
+    {
+      "title": "GasCast Podcast",
+      "url": "https://listen.gascastpodcast.co.uk/",
+      "note": "Bristol Rovers fan podcast hosted by Max Alderson, Neno, Caz May, Michael Willett — weekly discussion"
+    },
+    {
+      "title": "Talking Gas Podcast",
+      "url": "https://www.youtube.com/@TalkingGasPodcast",
+      "note": "Second fan podcast (YouTube) — added at the maintainer's request, 22 Jul 2026"
+    },
+    {
+      "title": "Rovers Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Bristol_Rovers_F.C.",
+      "note": "Comprehensive club history, stats, seasons — frequently updated with latest transfers and achievements"
+    },
+    {
+      "title": "Memorial Stadium Info",
+      "url": "https://www.bristolrovers.co.uk/memorial-stadium",
+      "note": "Official page for Bristol Rovers' home ground — capacity 12,300, opened 1921, Rovers since 1996"
+    }
+  ],
+  "social": [
+    {
+      "title": "Official X / Twitter",
+      "url": "https://twitter.com/Official_BRFC",
+      "note": "@Official_BRFC — official club announcements, match updates, team news"
+    },
+    {
+      "title": "Instagram",
+      "url": "https://www.instagram.com/official_brfc/",
+      "note": "@official_brfc — official club photos, behind-the-scenes, player highlights (80K+ followers)"
+    },
+    {
+      "title": "TikTok",
+      "url": "https://www.tiktok.com/@brfc_official",
+      "note": "@brfc_official — short-form videos, highlights, player content (45K+ followers)"
+    },
+    {
+      "title": "Facebook",
+      "url": "https://www.facebook.com/BristolRoversFC",
+      "note": "Official Bristol Rovers FC Facebook — news, match updates, fan engagement"
+    },
+    {
+      "title": "r/bristolrovers",
+      "url": "https://www.reddit.com/r/bristolrovers/",
+      "note": "Reddit community — casual discussion, memes, match threads (fans-run)"
+    }
+  ]
+}
