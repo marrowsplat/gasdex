@@ -55,3 +55,6 @@ ROADMAP.md
 prototypes/
 tools/build_variants.py
 tools/build_internal_pages.py
+
+# wrangler local state (created by deploys)
+.wrangler/
