@@ -35,6 +35,12 @@ data/news.json
 data/club.json
 data/youtube.json
 data/results.json
+# NOTE (session 8b): data/fixtures-audit.json IS committed (CI cache-commit step —
+# the daily digest reads it to flag source failures), and
+# data/fixtures-overrides.json IS committed (maintainer-curated fixture
+# corrections — hand-edited, must persist).
+# data/fixtures-official-reference.json is LOCAL-ONLY (QA reference capture).
+data/fixtures-official-reference.json
 
 # Temporary & local
 *.tmp

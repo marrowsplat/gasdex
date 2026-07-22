@@ -96,6 +96,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git add data/results-history.json
           git add data/news-history.json || true  # may not exist until first live build
+          git add data/fixtures-audit.json || true  # fixtures cross-check audit (read by the daily Slack digest)
           git diff --cached --quiet || git commit -m "chore: update rolling caches [skip ci]"
 
       - name: Push changes

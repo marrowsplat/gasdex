@@ -1,0 +1,363 @@
+{
+  "_comment": "Maintainer-curated fixture list + corrections applied on top of the automated source (see tools/feeds/fetch_results.py). Plain fixture facts, checked by hand against the official club fixture list on the date below. add: an add replaces any same-slug entry from the automated source, so these hand-verified entries always win (they age out automatically once the date passes). amend: keyed by ballot slug (opponent-slug + h/a + yyyymmdd) for one-off corrections to source-provided games. remove: drops fixtures the club does not recognise. MAINTENANCE: when the club announces a kickoff change or new fixture, edit this file.",
+  "updated": "2026-07-22",
+  "remove": [
+    {
+      "opponent": "Yate Town",
+      "date": "2026-07-24"
+    }
+  ],
+  "amend": {},
+  "add": [
+    {
+      "date": "2026-08-08",
+      "kickoff": "15:00",
+      "opponent": "Peterborough United",
+      "venue": "H",
+      "competition": "League Cup"
+    },
+    {
+      "date": "2026-08-15",
+      "kickoff": "15:00",
+      "opponent": "York City",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-08-22",
+      "kickoff": "12:30",
+      "opponent": "Newport County",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-08-25",
+      "kickoff": "19:00",
+      "opponent": "Chelsea U21",
+      "venue": "H",
+      "competition": "Vertu Trophy"
+    },
+    {
+      "date": "2026-08-29",
+      "kickoff": "15:00",
+      "opponent": "Crawley Town",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-09-01",
+      "kickoff": "19:45",
+      "opponent": "Colchester United",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-09-05",
+      "kickoff": "15:00",
+      "opponent": "Rotherham United",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-09-12",
+      "kickoff": "12:30",
+      "opponent": "Grimsby Town",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-09-19",
+      "kickoff": "15:00",
+      "opponent": "Gillingham",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-09-26",
+      "kickoff": "15:00",
+      "opponent": "Exeter City",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-10-03",
+      "kickoff": "15:00",
+      "opponent": "Crewe Alexandra",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-10-06",
+      "kickoff": "19:00",
+      "opponent": "Wycombe Wanderers",
+      "venue": "A",
+      "competition": "Vertu Trophy"
+    },
+    {
+      "date": "2026-10-10",
+      "kickoff": "15:00",
+      "opponent": "Barnet",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-10-17",
+      "kickoff": "15:00",
+      "opponent": "Shrewsbury Town",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-10-20",
+      "kickoff": "19:45",
+      "opponent": "Salford City",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-10-24",
+      "kickoff": "15:00",
+      "opponent": "Swindon Town",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-10-31",
+      "kickoff": "15:00",
+      "opponent": "Fleetwood Town",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-11-10",
+      "kickoff": "19:00",
+      "opponent": "Reading",
+      "venue": "H",
+      "competition": "Vertu Trophy"
+    },
+    {
+      "date": "2026-11-14",
+      "kickoff": "15:00",
+      "opponent": "Chesterfield",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-11-21",
+      "kickoff": "15:00",
+      "opponent": "Cheltenham Town",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-11-28",
+      "kickoff": "15:00",
+      "opponent": "Tranmere Rovers",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-12-01",
+      "kickoff": "19:45",
+      "opponent": "Oldham Athletic",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-12-12",
+      "kickoff": "15:00",
+      "opponent": "Accrington Stanley",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-12-19",
+      "kickoff": "15:00",
+      "opponent": "Rochdale",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-12-26",
+      "kickoff": "15:00",
+      "opponent": "Walsall",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2026-12-29",
+      "kickoff": "19:45",
+      "opponent": "Port Vale",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-01-01",
+      "kickoff": "15:00",
+      "opponent": "Northampton Town",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-01-09",
+      "kickoff": "15:00",
+      "opponent": "Rochdale",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-01-16",
+      "kickoff": "15:00",
+      "opponent": "Shrewsbury Town",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-01-19",
+      "kickoff": "19:45",
+      "opponent": "Salford City",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-01-23",
+      "kickoff": "15:00",
+      "opponent": "Swindon Town",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-01-30",
+      "kickoff": "15:00",
+      "opponent": "Fleetwood Town",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-02-06",
+      "kickoff": "15:00",
+      "opponent": "Crawley Town",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-02-09",
+      "kickoff": "19:45",
+      "opponent": "Colchester United",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-02-13",
+      "kickoff": "15:00",
+      "opponent": "Rotherham United",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-02-20",
+      "kickoff": "15:00",
+      "opponent": "Grimsby Town",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-02-27",
+      "kickoff": "15:00",
+      "opponent": "Chesterfield",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-03-06",
+      "kickoff": "15:00",
+      "opponent": "York City",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-03-13",
+      "kickoff": "15:00",
+      "opponent": "Newport County",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-03-20",
+      "kickoff": "15:00",
+      "opponent": "Cheltenham Town",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-03-26",
+      "kickoff": "15:00",
+      "opponent": "Northampton Town",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-03-29",
+      "kickoff": "15:00",
+      "opponent": "Walsall",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-04-03",
+      "kickoff": "15:00",
+      "opponent": "Port Vale",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-04-10",
+      "kickoff": "15:00",
+      "opponent": "Accrington Stanley",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-04-13",
+      "kickoff": "19:45",
+      "opponent": "Barnet",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-04-17",
+      "kickoff": "15:00",
+      "opponent": "Gillingham",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-04-24",
+      "kickoff": "15:00",
+      "opponent": "Exeter City",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-04-27",
+      "kickoff": "19:45",
+      "opponent": "Crewe Alexandra",
+      "venue": "H",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-05-01",
+      "kickoff": "15:00",
+      "opponent": "Tranmere Rovers",
+      "venue": "A",
+      "competition": "League Two"
+    },
+    {
+      "date": "2027-05-08",
+      "kickoff": "15:00",
+      "opponent": "Oldham Athletic",
+      "venue": "H",
+      "competition": "League Two"
+    }
+  ]
+}
