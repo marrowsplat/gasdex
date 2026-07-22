@@ -16,8 +16,8 @@ upgrade path if volume grows.
 - [x] Endpoints pasted into `FORM_ENDPOINT` on contact + submit pages.
 - [x] Demo notes removed from both pages (rate.html keeps its note until
       the ratings worker ships).
-- [ ] Test a real submission on the live site after deploy (fill the
-      contact form, check it arrives in the Formspree inbox/email).
+- [x] Live test passed (22 Jul 2026): invalid email correctly rejected
+      with the retry message; valid submission arrived by email.
 
 Both forms POST JSON with `Accept: application/json`, which Formspree
 supports natively (no redirect; the page shows its own confirmation).
