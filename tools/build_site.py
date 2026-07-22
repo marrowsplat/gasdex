@@ -20,6 +20,12 @@ from pathlib import Path
 from datetime import datetime, timedelta
 import re
 
+# News relevance filter (shared with tools/feeds/fetch_news.py). Applied
+# again at history-merge time as a second gate so a stale, unfiltered
+# news.json can never (re)pollute the rolling archive.
+sys.path.insert(0, str(Path(__file__).resolve().parent / "feeds"))
+from news_filter import filter_items as filter_news_items
+
 # Hardcoded fallback sample data (used when JSON files are missing)
 FALLBACK_NEWS = {
     "fetched_at": datetime.now(tz=None).isoformat(),
@@ -234,10 +240,13 @@ def update_news_history(data_dir, news_data, cap=200):
     """
     history_path = Path(data_dir) / "news-history.json"
     history = load_json_data(history_path) or {"items": []}
-    existing = {item.get("url"): item for item in history.get("items", []) if item.get("url")}
+    # Second-gate relevance filter: scrub existing cache AND incoming items
+    # (see tools/feeds/news_filter.py for the policy).
+    history_items = filter_news_items(history.get("items", []))
+    existing = {item.get("url"): item for item in history_items if item.get("url")}
 
     if not news_data.get("sample"):
-        for item in news_data.get("items", []):
+        for item in filter_news_items(news_data.get("items", [])):
             url = item.get("url")
             if url:
                 existing[url] = item  # newest fetch wins (title fixes etc.)

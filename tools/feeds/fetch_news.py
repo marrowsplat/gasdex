@@ -29,6 +29,7 @@ from common import (
     dedupe_by_title, ensure_iso8601, sort_by_date_desc, save_json,
     get_source_from_url
 )
+from news_filter import filter_items
 
 # Configuration
 FEEDS = {
@@ -69,6 +70,12 @@ def fetch_news():
     print(f"\nSources working: {', '.join(sources_worked)}")
     if sources_failed:
         print(f"Sources failed: {', '.join(sources_failed)}")
+
+    # Relevance filter (see news_filter.py — keeps Bristol City et al. out)
+    before = len(items)
+    items = filter_items(items, log=print)
+    if len(items) < before:
+        print(f"Relevance filter removed {before - len(items)} item(s)")
 
     # Dedupe by title and sort newest first
     items = dedupe_by_title(items)
