@@ -17,8 +17,11 @@ const RATE_LIMIT_WINDOW_MINUTES = 15;
 
 /**
  * Main request router
+ * NOTE (module-format workers): KV bindings are NOT globals — they arrive on
+ * the `env` object passed to fetch(). Every handler therefore takes `env`
+ * and uses env.GASDEX_RATINGS.
  */
-async function handleRequest(request) {
+async function handleRequest(request, env) {
   const url = new URL(request.url);
   const path = url.pathname;
 
@@ -41,11 +44,11 @@ async function handleRequest(request) {
   try {
     // Route dispatch
     if (path === '/ballot' && request.method === 'POST') {
-      return await handlePostBallot(request, corsHeaders);
+      return await handlePostBallot(request, env, corsHeaders);
     } else if (path === '/aggregate' && request.method === 'GET') {
-      return await handleGetAggregate(url, corsHeaders);
+      return await handleGetAggregate(url, env, corsHeaders);
     } else if (path === '/ballot-config' && request.method === 'GET') {
-      return await handleGetBallotConfig(url, corsHeaders);
+      return await handleGetBallotConfig(url, env, corsHeaders);
     } else {
       return new Response(JSON.stringify({ error: 'not found' }), {
         status: 404,
@@ -65,12 +68,12 @@ async function handleRequest(request) {
  * POST /ballot
  * Accepts { match_id, scores: {player_name: 1-10, ...}, motm: player_name }
  */
-async function handlePostBallot(request, corsHeaders) {
+async function handlePostBallot(request, env, corsHeaders) {
   const clientIp = request.headers.get('CF-Connecting-IP') || 'unknown';
 
   // Rate limit check
   const rateLimitKey = `rate:${clientIp}`;
-  const rateLimitData = await GASDEX_RATINGS.get(rateLimitKey, 'json') || { count: 0, resetAt: Date.now() + RATE_LIMIT_WINDOW_MINUTES * 60000 };
+  const rateLimitData = await env.GASDEX_RATINGS.get(rateLimitKey, 'json') || { count: 0, resetAt: Date.now() + RATE_LIMIT_WINDOW_MINUTES * 60000 };
 
   if (Date.now() < rateLimitData.resetAt && rateLimitData.count >= RATE_LIMIT_REQUESTS) {
     return new Response(JSON.stringify({ error: 'rate limited' }), {
@@ -86,7 +89,7 @@ async function handlePostBallot(request, corsHeaders) {
   } else {
     rateLimitData.count += 1;
   }
-  await GASDEX_RATINGS.put(rateLimitKey, JSON.stringify(rateLimitData));
+  await env.GASDEX_RATINGS.put(rateLimitKey, JSON.stringify(rateLimitData));
 
   // Parse payload
   let payload;
@@ -142,7 +145,7 @@ async function handlePostBallot(request, corsHeaders) {
   }
 
   // Check ballot window for match
-  const ballotConfig = await GASDEX_RATINGS.get(`config:${match_id}`, 'json');
+  const ballotConfig = await env.GASDEX_RATINGS.get(`config:${match_id}`, 'json');
   if (!ballotConfig) {
     return new Response(JSON.stringify({ error: 'ballot not open for this match' }), {
       status: 400,
@@ -162,7 +165,7 @@ async function handlePostBallot(request, corsHeaders) {
   // Check one-ballot-per-fan: hashed IP + cookie token
   const ballotToken = getBallotToken(request);
   const voterKey = hashVoter(clientIp, ballotToken);
-  const voterRecord = await GASDEX_RATINGS.get(`voter:${match_id}:${voterKey}`);
+  const voterRecord = await env.GASDEX_RATINGS.get(`voter:${match_id}:${voterKey}`);
 
   if (voterRecord) {
     return new Response(JSON.stringify({ error: 'you have already voted on this match' }), {
@@ -182,8 +185,15 @@ async function handlePostBallot(request, corsHeaders) {
     clientIp: hashIp(clientIp) // store hashed IP only
   };
 
-  await GASDEX_RATINGS.put(`ballot:${ballotId}`, JSON.stringify(ballot));
-  await GASDEX_RATINGS.put(`voter:${match_id}:${voterKey}`, 'voted');
+  await env.GASDEX_RATINGS.put(`ballot:${ballotId}`, JSON.stringify(ballot));
+  await env.GASDEX_RATINGS.put(`voter:${match_id}:${voterKey}`, 'voted');
+
+  // Register the ballot in the per-match index so /aggregate can find it.
+  // (Read-modify-write is fine at this traffic level; see backend-notes.md.)
+  const ballotListKey = `ballots:${match_id}`;
+  const ballotList = await env.GASDEX_RATINGS.get(ballotListKey, 'json') || [];
+  ballotList.push(ballotId);
+  await env.GASDEX_RATINGS.put(ballotListKey, JSON.stringify(ballotList));
 
   return new Response(JSON.stringify({ ok: true, ballot_id: ballotId }), {
     status: 200,
@@ -195,7 +205,7 @@ async function handlePostBallot(request, corsHeaders) {
  * GET /aggregate?match_id=...
  * Returns aggregated ratings: { match_id, count, players: {name: {avg, motm_votes}} }
  */
-async function handleGetAggregate(url, corsHeaders) {
+async function handleGetAggregate(url, env, corsHeaders) {
   const matchId = url.searchParams.get('match_id');
 
   if (!matchId || matchId.trim() === '') {
@@ -218,10 +228,10 @@ async function handleGetAggregate(url, corsHeaders) {
   // Store a rolling list of ballot IDs per match.
 
   const ballotListKey = `ballots:${matchId}`;
-  const ballotList = await GASDEX_RATINGS.get(ballotListKey, 'json') || [];
+  const ballotList = await env.GASDEX_RATINGS.get(ballotListKey, 'json') || [];
 
   for (const ballotId of ballotList) {
-    const ballot = await GASDEX_RATINGS.get(`ballot:${ballotId}`, 'json');
+    const ballot = await env.GASDEX_RATINGS.get(`ballot:${ballotId}`, 'json');
     if (ballot && ballot.match_id === matchId) {
       ballots.push(ballot);
     }
@@ -276,7 +286,7 @@ async function handleGetAggregate(url, corsHeaders) {
  * GET /ballot-config?match_id=...
  * Returns ballot definition for a match: { match_id, players: [name, ...], openAt, closeAt }
  */
-async function handleGetBallotConfig(url, corsHeaders) {
+async function handleGetBallotConfig(url, env, corsHeaders) {
   const matchId = url.searchParams.get('match_id');
 
   if (!matchId || matchId.trim() === '') {
@@ -286,7 +296,7 @@ async function handleGetBallotConfig(url, corsHeaders) {
     });
   }
 
-  const config = await GASDEX_RATINGS.get(`config:${matchId}`, 'json');
+  const config = await env.GASDEX_RATINGS.get(`config:${matchId}`, 'json');
 
   if (!config) {
     return new Response(JSON.stringify({ error: 'ballot not found' }), {
@@ -356,5 +366,7 @@ function generateId() {
  * Export for Cloudflare Workers
  */
 export default {
-  fetch: handleRequest
+  fetch(request, env, ctx) {
+    return handleRequest(request, env);
+  }
 };
