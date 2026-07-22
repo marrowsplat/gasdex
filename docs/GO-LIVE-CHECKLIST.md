@@ -43,8 +43,13 @@ in `docs/backend-notes.md`.
       worker fixes first: env-based KV binding for module-format workers,
       and indexing ballots into `ballots:{match}` so /aggregate can count
       them — commit 64ec27a, redeployed with `wrangler deploy --env=""`.)
-- [ ] Double-vote check: a second ballot from the same browser should be
-      rejected.
+- [x] Double-vote check PASSED (22 Jul 2026): initially broken (no cookie
+      was ever set, so every vote looked like a new voter — 3 votes got
+      through; test ballots wiped by resetting `ballots:{match}` to `[]`).
+      Fixed in 98c229c: the worker Set-Cookies the ballot token on the
+      first vote. Live retest: second ballot rejected. rate.html (6250cf6)
+      now shows rejected repeat voters the live results screen instead of
+      an error — confirm on the live site after the next Pages build.
 - [ ] NOTE: ballot configs must be seeded per match before voting opens:
       `wrangler kv key put "config:<match_id>" '<json>' --binding
       GASDEX_RATINGS --preview false --remote` (players list must match
