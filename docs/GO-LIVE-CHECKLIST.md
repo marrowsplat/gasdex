@@ -38,9 +38,17 @@ in `docs/backend-notes.md`.
 - [x] CORS allow-listed for `gasdex.co.uk`, `www.gasdex.co.uk`,
       `marrowsplat.github.io` + localhost — if the site moves host, add the
       new origin to `ALLOWED_ORIGINS` in worker.js and redeploy.
-- [ ] Live test: vote on the live rate page; the results screen should show
-      "1 fan has voted" with your scores (then check a second visit can't
-      easily double-vote — same browser should be rejected).
+- [x] Live test PASSED (22 Jul 2026): real vote on the live rate page
+      returned "1 fan has voted" with the submitted scores. (Required two
+      worker fixes first: env-based KV binding for module-format workers,
+      and indexing ballots into `ballots:{match}` so /aggregate can count
+      them — commit 64ec27a, redeployed with `wrangler deploy --env=""`.)
+- [ ] Double-vote check: a second ballot from the same browser should be
+      rejected.
+- [ ] NOTE: ballot configs must be seeded per match before voting opens:
+      `wrangler kv key put "config:<match_id>" '<json>' --binding
+      GASDEX_RATINGS --preview false --remote` (players list must match
+      rate.html). Automating this per fixture is a roadmap item.
 
 ## 3. After both are live
 
