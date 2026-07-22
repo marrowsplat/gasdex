@@ -111,7 +111,7 @@ jobs:
         run: # your deploy command here
 ```
 
-3. **Schedule rebuilds** (example: every 3 hours):
+3. **Schedule rebuilds** (example: hourly):
 
 ```yaml
 on:
@@ -196,7 +196,7 @@ with open('data/results.json') as f:
 ### Monthly:
 
 - [ ] Check for any deprecated API endpoints (API-Football changes rarely, but verify)
-- [ ] Review costs (free tier should suffice for 3-hourly rebuilds)
+- [ ] Review costs (free tier should suffice for hourly rebuilds)
 
 ## Optional: Add Fallback Provider
 

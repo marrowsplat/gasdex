@@ -260,7 +260,7 @@ If custom domain is broken after a push:
 - [ ] Domain purchased (if using custom domain)
 - [ ] DNS configured (if using custom domain)
 - [ ] Feed fetchers producing real data (check data/*.json)
-- [ ] Build schedule set (default: every 3 hours)
+- [ ] Build schedule set (default: hourly)
 - [ ] Bookmarked for daily checks!
 
 ---
