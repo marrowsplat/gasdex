@@ -266,17 +266,20 @@ try{
   /* Replace the placeholder results with the real aggregate from the worker.
      If the aggregate can't be fetched, fall back to a plain thank-you (never
      show the sample numbers after a real vote). */
-  function renderAggregate(agg){
+  function renderAggregate(agg, lead){
+    /* lead overrides the default "Thanks — your ballot has been counted."
+       opener (used for the already-voted path). */
+    lead = lead || 'Thanks \u2014 your ballot has been counted.';
     var res = document.getElementById('results');
     var thanks = res.querySelector('.thanks');
     res.querySelectorAll('.rate-row').forEach(function(r){ r.remove(); });
     var motmEl = res.querySelector('.motm-res');
     if(!agg || !agg.count){
-      thanks.textContent = 'Thanks \u2014 your ballot has been counted. Averages will appear here as more fans vote.';
+      thanks.textContent = lead + ' Averages will appear here as more fans vote.';
       if(motmEl) motmEl.remove();
       return;
     }
-    thanks.textContent = 'Thanks \u2014 your ballot has been counted. ' + agg.count +
+    thanks.textContent = lead + ' ' + agg.count +
       (agg.count === 1 ? ' fan has' : ' fans have') + ' voted.';
     var entries = Object.keys(agg.players).map(function(n){ return [n, agg.players[n]]; });
     entries.sort(function(a,b){ return b[1].avg - a[1].avg; });
@@ -319,6 +322,11 @@ try{
         parseInt(row.querySelector('.scores button.sel').getAttribute('data-v'), 10);
     });
     var btn = this; btn.disabled = true;
+    function fetchAggregate(){
+      return fetch(RATINGS_ENDPOINT + '/aggregate?match_id=' + encodeURIComponent(MATCH_ID))
+        .then(function(a){ return a.ok ? a.json() : null; })
+        .catch(function(){ return null; });
+    }
     fetch(RATINGS_ENDPOINT + '/ballot', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
@@ -329,17 +337,35 @@ try{
         motm: motm.closest('.vote-row').getAttribute('data-player')
       })
     }).then(function(r){
-      if(!r.ok) throw new Error('ballot rejected');
-      return fetch(RATINGS_ENDPOINT + '/aggregate?match_id=' + encodeURIComponent(MATCH_ID))
-        .then(function(a){ return a.ok ? a.json() : null; })
-        .catch(function(){ return null; });
-    }).then(function(agg){
-      renderAggregate(agg);
-      showResults();
-    }).catch(function(){
+      if(r.ok){
+        return fetchAggregate().then(function(agg){
+          renderAggregate(agg);
+          showResults();
+        });
+      }
+      /* Rejected: read the worker's reason and respond appropriately. */
+      return r.json().catch(function(){ return {}; }).then(function(body){
+        var reason = (body && body.error) || '';
+        if(reason.indexOf('already voted') !== -1){
+          /* Not an error from the fan's point of view — show the results. */
+          return fetchAggregate().then(function(agg){
+            renderAggregate(agg, 'You\u2019ve already voted on this match.');
+            showResults();
+          });
+        }
+        throw new Error(reason || 'ballot rejected');
+      });
+    }).catch(function(e){
       btn.disabled = false;
       var err = document.getElementById('err');
-      err.textContent = "Sorry — your ballot didn't send. Please try again in a minute.";
+      var reason = (e && e.message) || '';
+      if(reason.indexOf('closed') !== -1){
+        err.textContent = 'Voting for this match has closed.';
+      }else if(reason.indexOf('rate limited') !== -1){
+        err.textContent = 'Too many attempts \u2014 please wait a few minutes and try again.';
+      }else{
+        err.textContent = "Sorry — your ballot didn't send. Please try again in a minute.";
+      }
       err.style.display = 'inline';
     });
   });
