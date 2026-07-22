@@ -396,13 +396,8 @@
       <button class="reorder-btn" type="button" title="Move down" aria-label="Move this box down" data-dir="down">&#9660;</button>
     </div>
     <div class="inner">
-    <div class="rate-note">vs Gillingham (H) &middot; <b>214 fans voted</b></div>
-    <div class="rate-row"><span class="nm">J. Ward</span><div class="bar"><i style="width:82%"></i></div><span class="val">8.2</span></div>
-    <div class="rate-row"><span class="nm">Sotiriou</span><div class="bar"><i style="width:71%"></i></div><span class="val">7.1</span></div>
-    <div class="rate-row"><span class="nm">Hutchinson</span><div class="bar"><i style="width:68%"></i></div><span class="val">6.8</span></div>
-    <div class="rate-row"><span class="nm">C. Taylor</span><div class="bar"><i style="width:64%"></i></div><span class="val">6.4</span></div>
-    <div class="rate-row"><span class="nm">Omochere</span><div class="bar"><i style="width:55%"></i></div><span class="val">5.5</span></div>
-    <div class="motm">Man of the Match: <b>Jed Ward</b> (61% of votes)</div>
+    <div class="rate-note" id="rateNote">vs Gillingham (H) &middot; <b>voting open</b></div>
+    <div class="motm" id="rateStatus">Averages will appear here once ballots are in.</div>
     <a class="btn" href="rate.html">Rate the players &rarr;</a>
     </div>
   </div>
@@ -618,6 +613,58 @@
       boxes = Array.prototype.slice.call(colsContainer.querySelectorAll('.box'));
     }
   }catch(e){}
+})();
+</script>
+<script>
+(function(){
+  /* Live fan ratings (22 Jul 2026): the box ships with a neutral message and
+     is upgraded in place from the ratings worker's real /aggregate. On any
+     failure (worker down, no ballots yet) the neutral message stays — the
+     old static sample numbers are gone for good. */
+  var RATINGS_ENDPOINT = 'https://gasdex-ratings.gasdex.workers.dev';
+  var MATCH_ID = 'gillingham-h-20260711';
+  var note = document.getElementById('rateNote');
+  var status = document.getElementById('rateStatus');
+  if(!note || !status || !RATINGS_ENDPOINT) return;
+  fetch(RATINGS_ENDPOINT + '/aggregate?match_id=' + encodeURIComponent(MATCH_ID))
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(agg){
+      if(!agg || !agg.count || !agg.players) return;
+      note.textContent = '';
+      note.appendChild(document.createTextNode('vs Gillingham (H) \u00b7 '));
+      var nb = document.createElement('b');
+      nb.textContent = agg.count === 1 ? '1 fan voted' : agg.count + ' fans voted';
+      note.appendChild(nb);
+      var entries = Object.keys(agg.players).map(function(k){ return [k, agg.players[k]]; });
+      entries.sort(function(a, b){ return b[1].avg - a[1].avg; });
+      var motmName = null, motmVotes = 0;
+      entries.forEach(function(e){
+        if(e[1].motm_votes > motmVotes){ motmVotes = e[1].motm_votes; motmName = e[0]; }
+      });
+      var frag = document.createDocumentFragment();
+      entries.slice(0, 5).forEach(function(e){
+        var row = document.createElement('div'); row.className = 'rate-row';
+        var nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = e[0];
+        var bar = document.createElement('div'); bar.className = 'bar';
+        var fill = document.createElement('i');
+        fill.style.width = Math.max(0, Math.min(100, Math.round(e[1].avg * 10))) + '%';
+        bar.appendChild(fill);
+        var val = document.createElement('span'); val.className = 'val';
+        val.textContent = Number(e[1].avg).toFixed(1);
+        row.appendChild(nm); row.appendChild(bar); row.appendChild(val);
+        frag.appendChild(row);
+      });
+      if(motmName && motmVotes > 0){
+        var motm = document.createElement('div'); motm.className = 'motm';
+        motm.appendChild(document.createTextNode('Man of the Match: '));
+        var mb = document.createElement('b'); mb.textContent = motmName;
+        motm.appendChild(mb);
+        motm.appendChild(document.createTextNode(' (' + Math.round(100 * motmVotes / agg.count) + '% of votes)'));
+        frag.appendChild(motm);
+      }
+      status.parentNode.replaceChild(frag, status);
+    })
+    .catch(function(){ /* keep the neutral message */ });
 })();
 </script>
 </body>

@@ -162,8 +162,14 @@ async function handlePostBallot(request, env, corsHeaders) {
     });
   }
 
-  // Check one-ballot-per-fan: hashed IP + cookie token
-  const ballotToken = getBallotToken(request);
+  // Check one-ballot-per-fan: hashed IP + cookie token.
+  // If the browser has no token yet, mint one now and SET IT via Set-Cookie
+  // on the success response — without that, every vote gets a fresh random
+  // token and the same browser can vote repeatedly (bug found in live test).
+  let ballotToken = getBallotToken(request);
+  if (!ballotToken) {
+    ballotToken = generateToken();
+  }
   const voterKey = hashVoter(clientIp, ballotToken);
   const voterRecord = await env.GASDEX_RATINGS.get(`voter:${match_id}:${voterKey}`);
 
@@ -195,9 +201,16 @@ async function handlePostBallot(request, env, corsHeaders) {
   ballotList.push(ballotId);
   await env.GASDEX_RATINGS.put(ballotListKey, JSON.stringify(ballotList));
 
+  // Persist the token in the browser (1 year). SameSite=None + Secure are
+  // required because the site and the worker are on different hosts and the
+  // page fetches with credentials:'include'.
   return new Response(JSON.stringify({ ok: true, ballot_id: ballotId }), {
     status: 200,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    headers: {
+      ...corsHeaders,
+      'Content-Type': 'application/json',
+      'Set-Cookie': `gasdex-ballot-token=${ballotToken}; Max-Age=31536000; Path=/; Secure; HttpOnly; SameSite=None`
+    }
   });
 }
 
@@ -333,15 +346,15 @@ function getSiteOrigin(request) {
 }
 
 function getBallotToken(request) {
-  // Try to extract a ballot token from cookies (set by the site on first visit)
-  // If not present, generate a random one for this request
+  // Extract the ballot token from cookies. Returns null if absent — the
+  // ballot handler then mints one and returns it via Set-Cookie.
   const cookieHeader = request.headers.get('Cookie') || '';
   const match = cookieHeader.match(/gasdex-ballot-token=([^;]+)/);
-  if (match) {
-    return match[1];
-  }
-  // Generate random token (in production, the site would set this via Set-Cookie)
-  return Math.random().toString(36).substring(2, 15);
+  return match ? match[1] : null;
+}
+
+function generateToken() {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
 function hashVoter(ip, token) {
