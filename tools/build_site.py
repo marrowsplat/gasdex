@@ -284,6 +284,79 @@ def build_archive_news(template_path, data_dir, output_path, news_data):
     return output_path
 
 
+SITE_URL = "https://gasdex.co.uk"
+
+
+def _rfc822(iso_string):
+    """ISO datetime -> RFC 822 date for RSS pubDate (falls back to now)."""
+    try:
+        dt = datetime.fromisoformat(iso_string.replace('Z', '+00:00'))
+    except Exception:
+        dt = datetime.now(tz=None)
+    return dt.strftime("%a, %d %b %Y %H:%M:%S +0000")
+
+
+def _xml(text):
+    """Escape text for XML element content."""
+    return html.escape(str(text), quote=True)
+
+
+def build_feed(output_path, news_items, club_items, youtube_items, cap=50):
+    """Write out/feed.xml — RSS 2.0 combining news, club and YouTube items.
+
+    Item links point at the original articles/videos (same as the index).
+    The channel self-URL uses SITE_URL; until the custom domain is attached
+    the feed still works fine on the github.io URL (readers follow the
+    relative autodiscovery link on the index).
+    """
+    entries = []
+    for item in news_items:
+        entries.append((item.get("published", ""), item, f"News · {item.get('source', '')}"))
+    for item in club_items:
+        entries.append((item.get("published", ""), item, "Club announcement"))
+    for item in youtube_items:
+        entries.append((item.get("published", ""), item, f"Video · {item.get('channel', '')}"))
+    entries.sort(key=lambda e: e[0], reverse=True)
+    entries = entries[:cap]
+
+    items_xml = []
+    for published, item, label in entries:
+        url = item.get("url", "")
+        title = item.get("title", "")
+        items_xml.append(
+            "    <item>\n"
+            f"      <title>{_xml(title)}</title>\n"
+            f"      <link>{_xml(url)}</link>\n"
+            f"      <guid isPermaLink=\"false\">{_xml(url)}</guid>\n"
+            f"      <category>{_xml(label)}</category>\n"
+            f"      <pubDate>{_rfc822(published)}</pubDate>\n"
+            "    </item>"
+        )
+
+    now_822 = _rfc822(datetime.now(tz=None).isoformat())
+    feed = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n'
+        "  <channel>\n"
+        "    <title>GasDex — Everything Bristol Rovers</title>\n"
+        f"    <link>{SITE_URL}/</link>\n"
+        "    <description>Bristol Rovers news, club announcements and videos, "
+        "aggregated by GasDex (unofficial).</description>\n"
+        "    <language>en-gb</language>\n"
+        f"    <lastBuildDate>{now_822}</lastBuildDate>\n"
+        f'    <atom:link href="{SITE_URL}/feed.xml" rel="self" type="application/rss+xml"/>\n'
+        + "\n".join(items_xml) + "\n"
+        "  </channel>\n"
+        "</rss>\n"
+    )
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(feed)
+    print(f"✓ Rendered to {output_path} ({len(entries)} feed entries)")
+    return output_path
+
+
 def render_club_items(items):
     """Render club announcements list items."""
     html_items = []
@@ -503,6 +576,18 @@ def main():
             data_dir,
             root / "out" / "archive-news.html",
             news_data,
+        )
+        # RSS feed from the same data (news uses the rolling history so the
+        # feed doesn't drop items between fetches)
+        club_data = load_json_data(data_dir / "club.json") or FALLBACK_CLUB
+        youtube_data = load_json_data(data_dir / "youtube.json") or FALLBACK_YOUTUBE
+        history = load_json_data(data_dir / "news-history.json") or {}
+        feed_news = (history.get("items") or news_data.get("items", []))[:30]
+        build_feed(
+            root / "out" / "feed.xml",
+            feed_news,
+            club_data.get("items", []),
+            youtube_data.get("items", []),
         )
         return 0
     except Exception as e:
