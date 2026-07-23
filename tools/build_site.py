@@ -201,7 +201,7 @@ def render_news_items(items):
         new_tag = '<span class="tag-new">NEW</span>' if should_show_new_tag(published) else ""
 
         html_items.append(
-            f'      <li><span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-news"/></svg></span><div><a href="{url}" class="ext" target="_blank" rel="noopener">{title}</a>{new_tag}<span class="when">{when_text}</span></div></li>'
+            f'      <li><span class="ico">&#128240;</span><div><a href="{url}" class="ext" target="_blank" rel="noopener">{title}</a>{new_tag}<span class="when">{when_text}</span></div></li>'
         )
     return "\n".join(html_items)
 
@@ -220,7 +220,7 @@ def render_archive_news_items(items):
 
         html_items.append(
             '      <li class="news-item">\n'
-            '        <span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-news"/></svg></span>\n'
+            '        <span class="ico">&#128240;</span>\n'
             '        <div class="content">\n'
             f'          <a href="{url}" class="ext" target="_blank" rel="noopener">{title}</a>{new_tag}\n'
             f'          <span class="when">{when_text}</span>\n'
@@ -378,7 +378,7 @@ def render_club_items(items):
         new_tag = '<span class="tag-new">NEW</span>' if should_show_new_tag(published) else ""
 
         html_items.append(
-            f'      <li><span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-club"/></svg></span><div><a href="{url}" class="ext" target="_blank" rel="noopener">{title}</a>{new_tag}<span class="when">{when_text}</span></div></li>'
+            f'      <li><span class="ico">&#128309;</span><div><a href="{url}" class="ext" target="_blank" rel="noopener">{title}</a>{new_tag}<span class="when">{when_text}</span></div></li>'
         )
     return "\n".join(html_items)
 
@@ -396,7 +396,7 @@ def render_youtube_items(items):
         new_tag = '<span class="tag-new">NEW</span>' if should_show_new_tag(published) else ""
 
         html_items.append(
-            f'      <li><span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-tube"/></svg></span><div><a href="{url}" class="ext" target="_blank" rel="noopener">{title}</a>{new_tag}<span class="when">{when_text}</span></div></li>'
+            f'      <li><span class="ico">&#9654;&#65039;</span><div><a href="{url}" class="ext" target="_blank" rel="noopener">{title}</a>{new_tag}<span class="when">{when_text}</span></div></li>'
         )
     return "\n".join(html_items)
 
@@ -650,7 +650,7 @@ def load_published_reports(data_dir):
 
 # The index box's zero-reports state (also the static markup in
 # site/index.html — keep the two in lockstep).
-REPORTS_EMPTY_LI = ('      <li><span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-report"/></svg></span>'
+REPORTS_EMPTY_LI = ('      <li><span class="ico">&#9997;&#65039;</span>'
                     '<div>No fan reports published yet &mdash; be the first!</div></li>')
 
 
@@ -664,7 +664,7 @@ def render_report_items(items, cap=5):
         author = html.escape(it["author"])
         opp = html.escape(it["opponent"])
         rows.append(
-            f'      <li><span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-report"/></svg></span><div>'
+            f'      <li><span class="ico">&#9997;&#65039;</span><div>'
             f'<a href="report-{it["slug"]}.html">&quot;{title}&quot; &mdash; {opp} ({it["venue"]})</a>'
             f'<span class="when">by {author}</span></div></li>'
         )
@@ -709,7 +709,7 @@ def build_archive_reports(template_path, output_path, items):
                 opp = html.escape(it["opponent"])
                 lis.append(
                     '        <li class="report-item">\n'
-                    '          <span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-report"/></svg></span>\n'
+                    '          <span class="ico">&#9997;&#65039;</span>\n'
                     '          <div class="content">\n'
                     f'            <a href="report-{it["slug"]}.html">&quot;{title}&quot; &mdash; {opp} ({it["venue"]})</a>\n'
                     f'            <span class="author">by {author}</span>\n'

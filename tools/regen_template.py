@@ -11,10 +11,10 @@ src = (root / "site/index.html").read_text()
 patterns = {
     "results": re.compile(r'^\s*<div class="score-row">'),
     "fixtures": re.compile(r'^\s*<div class="fix-row">'),
-    "news": re.compile(r'^\s*<li><span class="ico"><svg[^>]*><use href="#i-news"/>'),
-    "club": re.compile(r'^\s*<li><span class="ico"><svg[^>]*><use href="#i-club"/>'),
-    "youtube": re.compile(r'^\s*<li><span class="ico"><svg[^>]*><use href="#i-tube"/>'),
-    "reports": re.compile(r'^\s*<li><span class="ico"><svg[^>]*><use href="#i-report"/>'),
+    "news": re.compile(r'^\s*<li><span class="ico">&#128240;</span>'),
+    "club": re.compile(r'^\s*<li><span class="ico">&#128309;</span>'),
+    "youtube": re.compile(r'^\s*<li><span class="ico">&#9654;&#65039;</span>'),
+    "reports": re.compile(r'^\s*<li><span class="ico">&#9997;&#65039;</span>'),
 }
 
 lines = src.split("\n")

@@ -28,7 +28,6 @@
   .box ul{list-style:none}
   .box li{padding:3.5px 0;display:flex;gap:7px;align-items:baseline}
   .box li .ico{flex-shrink:0;width:16px;text-align:center}
-  .box li .ico svg{width:13px;height:13px;vertical-align:-2px;color:#123f77}
   .score-row,.fix-row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:0 8px;padding:5px 0}
   .comp{flex-basis:100%;font-size:10px;color:#77777d;line-height:1.5}
   .comp b{font-weight:400;color:#55555c}
@@ -326,12 +325,6 @@
 
 <!-- Feed icon set (Option B, session 11): inline SVG symbols referenced by
      <use> in the feed boxes — consistent on every device, unlike emoji. -->
-<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
-  <symbol id="i-news" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M4.8 6h6.4M4.8 8.3h6.4M4.8 10.6h3.8"/></symbol>
-  <symbol id="i-club" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.2l5.2 1.6v4.1c0 3-2.3 4.9-5.2 5.9-2.9-1-5.2-2.9-5.2-5.9V3.8z"/></symbol>
-  <symbol id="i-tube" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="1.8" y="3.6" width="12.4" height="8.8" rx="2.4"/><path d="M6.8 6.1v3.8L10 8z" fill="currentColor" stroke="none"/></symbol>
-  <symbol id="i-report" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13.2l.7-2.9 6.9-6.9a1.5 1.5 0 0 1 2.1 0l.1.1a1.5 1.5 0 0 1 0 2.1l-6.9 6.9z"/><path d="M9.9 4.1l2 2"/></symbol>
-</svg>
 <div class="masthead"><div class="crest"><img class="logo-dark" src="assets/logo-mark-dark.png" alt=""><img class="logo-light" src="assets/logo-mark-light.png" alt=""></div>
   <div style="flex:1">
     <h1><b>Gas</b>Dex</h1>
@@ -399,11 +392,11 @@
     <div class="inner">
     <ul>
     <!--BLOCK:news-->
-      <li><span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-news"/></svg></span><div><a href="#" class="ext" target="_blank" rel="noopener">Rovers boss praises &quot;unfair&quot; defeat response</a><span class="tag-new">NEW</span><span class="when">BristolLive &middot; 2h</span></div></li>
-      <li><span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-news"/></svg></span><div><a href="#" class="ext" target="_blank" rel="noopener">League Two weekend preview: Grimsby test awaits</a><span class="tag-new">NEW</span><span class="when">BBC Sport &middot; 5h</span></div></li>
-      <li><span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-news"/></svg></span><div><a href="#" class="ext" target="_blank" rel="noopener">Sotiriou attracting interest after hot streak</a><span class="when">FLW &middot; 1d</span></div></li>
-      <li><span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-news"/></svg></span><div><a href="#" class="ext" target="_blank" rel="noopener">Memorial Stadium redevelopment: latest</a><span class="when">BristolLive &middot; 2d</span></div></li>
-      <li><span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-news"/></svg></span><div><a href="#" class="ext" target="_blank" rel="noopener">Fan gallery: best photos from Barrow away</a><span class="when">Bristol Post &middot; 3d</span></div></li>
+      <li><span class="ico">&#128240;</span><div><a href="#" class="ext" target="_blank" rel="noopener">Rovers boss praises &quot;unfair&quot; defeat response</a><span class="tag-new">NEW</span><span class="when">BristolLive &middot; 2h</span></div></li>
+      <li><span class="ico">&#128240;</span><div><a href="#" class="ext" target="_blank" rel="noopener">League Two weekend preview: Grimsby test awaits</a><span class="tag-new">NEW</span><span class="when">BBC Sport &middot; 5h</span></div></li>
+      <li><span class="ico">&#128240;</span><div><a href="#" class="ext" target="_blank" rel="noopener">Sotiriou attracting interest after hot streak</a><span class="when">FLW &middot; 1d</span></div></li>
+      <li><span class="ico">&#128240;</span><div><a href="#" class="ext" target="_blank" rel="noopener">Memorial Stadium redevelopment: latest</a><span class="when">BristolLive &middot; 2d</span></div></li>
+      <li><span class="ico">&#128240;</span><div><a href="#" class="ext" target="_blank" rel="noopener">Fan gallery: best photos from Barrow away</a><span class="when">Bristol Post &middot; 3d</span></div></li>
     <!--/BLOCK:news-->
     </ul>
     <a class="see-all-link" href="archive-news.html">See all news &rarr;</a>
@@ -419,10 +412,10 @@
     <div class="inner">
     <ul>
     <!--BLOCK:club-->
-      <li><span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-club"/></svg></span><div><a href="#" class="ext" target="_blank" rel="noopener">Ticket details: Grimsby (H)</a><span class="tag-new">NEW</span><span class="when">6h</span></div></li>
-      <li><span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-club"/></svg></span><div><a href="#" class="ext" target="_blank" rel="noopener">U18s friendly result and report</a><span class="when">1d</span></div></li>
-      <li><span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-club"/></svg></span><div><a href="#" class="ext" target="_blank" rel="noopener">Community Trust summer camps open</a><span class="when">2d</span></div></li>
-      <li><span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-club"/></svg></span><div><a href="#" class="ext" target="_blank" rel="noopener">Away travel: Salford coach bookings</a><span class="when">3d</span></div></li>
+      <li><span class="ico">&#128309;</span><div><a href="#" class="ext" target="_blank" rel="noopener">Ticket details: Grimsby (H)</a><span class="tag-new">NEW</span><span class="when">6h</span></div></li>
+      <li><span class="ico">&#128309;</span><div><a href="#" class="ext" target="_blank" rel="noopener">U18s friendly result and report</a><span class="when">1d</span></div></li>
+      <li><span class="ico">&#128309;</span><div><a href="#" class="ext" target="_blank" rel="noopener">Community Trust summer camps open</a><span class="when">2d</span></div></li>
+      <li><span class="ico">&#128309;</span><div><a href="#" class="ext" target="_blank" rel="noopener">Away travel: Salford coach bookings</a><span class="when">3d</span></div></li>
     <!--/BLOCK:club-->
     </ul>
     </div>
@@ -450,7 +443,7 @@
     <div class="inner">
     <ul>
     <!--BLOCK:reports-->
-      <li><span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-report"/></svg></span><div>No fan reports published yet &mdash; be the first!</div></li>
+      <li><span class="ico">&#9997;&#65039;</span><div>No fan reports published yet &mdash; be the first!</div></li>
     <!--/BLOCK:reports-->
     </ul>
     <a class="btn" href="submit.html">Submit your report &rarr;</a>
@@ -468,10 +461,10 @@
     <div class="inner">
     <ul>
     <!--BLOCK:youtube-->
-      <li><span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-tube"/></svg></span><div><a href="#" class="ext" target="_blank" rel="noopener">HIGHLIGHTS: Rovers 0&ndash;1 Gillingham</a><span class="tag-new">NEW</span><span class="when">Official &middot; 1d</span></div></li>
-      <li><span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-tube"/></svg></span><div><a href="#" class="ext" target="_blank" rel="noopener">Gas Cast #142: transfer window special</a><span class="when">Gas Cast &middot; 2d</span></div></li>
-      <li><span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-tube"/></svg></span><div><a href="#" class="ext" target="_blank" rel="noopener">Matchday vlog: Barrow away trip</a><span class="when">Rovers Vlogs &middot; 4d</span></div></li>
-      <li><span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-tube"/></svg></span><div><a href="#" class="ext" target="_blank" rel="noopener">Every goal from June</a><span class="when">Official &middot; 6d</span></div></li>
+      <li><span class="ico">&#9654;&#65039;</span><div><a href="#" class="ext" target="_blank" rel="noopener">HIGHLIGHTS: Rovers 0&ndash;1 Gillingham</a><span class="tag-new">NEW</span><span class="when">Official &middot; 1d</span></div></li>
+      <li><span class="ico">&#9654;&#65039;</span><div><a href="#" class="ext" target="_blank" rel="noopener">Gas Cast #142: transfer window special</a><span class="when">Gas Cast &middot; 2d</span></div></li>
+      <li><span class="ico">&#9654;&#65039;</span><div><a href="#" class="ext" target="_blank" rel="noopener">Matchday vlog: Barrow away trip</a><span class="when">Rovers Vlogs &middot; 4d</span></div></li>
+      <li><span class="ico">&#9654;&#65039;</span><div><a href="#" class="ext" target="_blank" rel="noopener">Every goal from June</a><span class="when">Official &middot; 6d</span></div></li>
     <!--/BLOCK:youtube-->
     </ul>
     </div>
