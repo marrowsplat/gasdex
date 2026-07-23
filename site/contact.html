@@ -19,9 +19,11 @@
   }
   a{text-decoration:none;transition:color .15s ease, background .15s ease}
   .mast-mini{max-width:840px;margin:0 auto;padding:16px 22px 12px;display:flex;align-items:center;gap:12px}
-  .crest-mini{width:34px;height:34px;border-radius:50%;flex-shrink:0;
-    background:conic-gradient(#0d4f9e 0 90deg,#fff 90deg 180deg,#0d4f9e 180deg 270deg,#fff 270deg 360deg);
-    border:2px solid #fff;box-shadow:0 0 0 2px #0d4f9e}
+  .crest-mini{height:34px;flex-shrink:0}
+  .crest-mini img{height:34px;width:auto;display:block}
+  .crest-mini .logo-light{display:none}
+  body.bg-light .crest-mini .logo-dark{display:none}
+  body.bg-light .crest-mini .logo-light{display:block}
   .mast-mini .wordmark{font-size:19px;color:#4db8ff}
   .mast-mini .wordmark b{color:#fff}
   .mast-mini a:hover .wordmark, .mast-mini a:hover .wordmark b{color:#ffc400}
@@ -118,7 +120,7 @@
 
 <div class="mast-mini">
   <a class="home-link" href="index.html" title="Back to the index">
-    <span class="crest-mini"></span>
+    <span class="crest-mini"><img class="logo-dark" src="assets/logo-mark-dark.png" alt=""><img class="logo-light" src="assets/logo-mark-light.png" alt=""></span>
     <span class="wordmark"><b>Gas</b>Dex</span>
   </a>
   <span class="back"><a href="index.html">&larr; Back to the index</a></span>
