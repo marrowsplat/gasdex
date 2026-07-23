@@ -14,6 +14,9 @@
 const BALLOT_WINDOW_HOURS = 48;
 const RATE_LIMIT_REQUESTS = 10;
 const RATE_LIMIT_WINDOW_MINUTES = 15;
+// Max accepted ballots per match from one IP address (anti-abuse backstop —
+// generous enough for households/shared wifi, stops incognito-loop stuffing).
+const IP_VOTE_CAP = 5;
 
 /**
  * Main request router
@@ -162,19 +165,39 @@ async function handlePostBallot(request, env, corsHeaders) {
     });
   }
 
-  // Check one-ballot-per-fan: hashed IP + cookie token.
-  // If the browser has no token yet, mint one now and SET IT via Set-Cookie
-  // on the success response — without that, every vote gets a fresh random
-  // token and the same browser can vote repeatedly (bug found in live test).
-  let ballotToken = getBallotToken(request);
+  // One-ballot-per-fan. The token is the voter identity and travels TWO ways:
+  //  1. In the request BODY (payload.ballot_token) — the page keeps it in
+  //     localStorage. This is FIRST-PARTY storage, so it survives in Brave /
+  //     Safari / Firefox, which all bin or expire the cross-site cookie
+  //     (live bug: Brave's ephemeral third-party storage let the same
+  //     browser revote in a new session).
+  //  2. As a cookie (legacy backup for browsers that kept it).
+  // Body token wins; cookie is the fallback; otherwise mint a fresh one.
+  // The token is echoed back in the response body so the page can store it.
+  let ballotToken = sanitizeToken(payload.ballot_token) || getBallotToken(request);
   if (!ballotToken) {
     ballotToken = generateToken();
   }
-  const voterKey = hashVoter(clientIp, ballotToken);
+  // Key on the TOKEN ONLY (not IP+token): a fan whose IP changes (mobile
+  // networks) must still be blocked from revoting with the same browser.
+  const voterKey = hashToken(ballotToken);
   const voterRecord = await env.GASDEX_RATINGS.get(`voter:${match_id}:${voterKey}`);
 
   if (voterRecord) {
     return new Response(JSON.stringify({ error: 'you have already voted on this match' }), {
+      status: 400,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+
+  // IP cap backstop: at most IP_VOTE_CAP accepted ballots per match from one
+  // IP. Catches token-reset abuse (incognito loops / cleared storage) while
+  // leaving room for households and shared wifi. Carrier-NAT fans could in
+  // theory exhaust a shared IP on a big match — cap is tunable.
+  const ipCapKey = `ipvotes:${match_id}:${hashIp(clientIp)}`;
+  const ipVotes = parseInt(await env.GASDEX_RATINGS.get(ipCapKey) || '0', 10);
+  if (ipVotes >= IP_VOTE_CAP) {
+    return new Response(JSON.stringify({ error: 'vote limit reached for this network' }), {
       status: 400,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
@@ -193,6 +216,7 @@ async function handlePostBallot(request, env, corsHeaders) {
 
   await env.GASDEX_RATINGS.put(`ballot:${ballotId}`, JSON.stringify(ballot));
   await env.GASDEX_RATINGS.put(`voter:${match_id}:${voterKey}`, 'voted');
+  await env.GASDEX_RATINGS.put(ipCapKey, String(ipVotes + 1));
 
   // Register the ballot in the per-match index so /aggregate can find it.
   // (Read-modify-write is fine at this traffic level; see backend-notes.md.)
@@ -201,10 +225,10 @@ async function handlePostBallot(request, env, corsHeaders) {
   ballotList.push(ballotId);
   await env.GASDEX_RATINGS.put(ballotListKey, JSON.stringify(ballotList));
 
-  // Persist the token in the browser (1 year). SameSite=None + Secure are
-  // required because the site and the worker are on different hosts and the
-  // page fetches with credentials:'include'.
-  return new Response(JSON.stringify({ ok: true, ballot_id: ballotId }), {
+  // Echo the token in the body (the page stores it in localStorage — the
+  // reliable path) AND keep the legacy cookie (SameSite=None + Secure because
+  // the site and worker are on different hosts; some browsers won't keep it).
+  return new Response(JSON.stringify({ ok: true, ballot_id: ballotId, ballot_token: ballotToken }), {
     status: 200,
     headers: {
       ...corsHeaders,
@@ -357,9 +381,16 @@ function generateToken() {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
-function hashVoter(ip, token) {
-  // Simple hash: concatenate and take first 16 chars (good enough for one-ballot-per-fan best-effort)
-  return (ip + token).split('').reduce((acc, ch) => {
+function sanitizeToken(t) {
+  // Body tokens are client-supplied — accept only plausible token strings so
+  // junk can't be stored or reflected. Returns null if invalid/absent.
+  if (typeof t !== 'string') return null;
+  return /^[a-z0-9]{10,64}$/.test(t) ? t : null;
+}
+
+function hashToken(token) {
+  // Voter identity hash — token only (see handlePostBallot for why not IP).
+  return token.split('').reduce((acc, ch) => {
     return (acc << 5) - acc + ch.charCodeAt(0);
   }, 0).toString(36);
 }

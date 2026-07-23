@@ -566,6 +566,134 @@ def build_site(template_path, data_dir, output_path):
     return output_path
 
 
+def _report_block(template, block, content):
+    """Replace one <!--BLOCK:x-->...<!--/BLOCK:x--> region (markers kept)."""
+    return re.sub(
+        rf'<!--BLOCK:{block}-->.*?<!--/BLOCK:{block}-->',
+        lambda m: f'<!--BLOCK:{block}-->{content}<!--/BLOCK:{block}-->',
+        template,
+        flags=re.DOTALL,
+    )
+
+
+def build_reports(template_path, data_dir, out_dir):
+    """Render approved fan match reports to out/report-<match_id>.html.
+
+    APPROVE-BY-FILE FLOW (docs/REPORT-PUBLISHING.md): the maintainer saves an
+    approved submission as data/reports/<match_id>.json (schema =
+    data/reports/_example.json), commits and pushes; CI renders + deploys the
+    page automatically. Filenames starting with "_" are skipped (examples/
+    templates). Output pages live flat in out/ so relative links and assets
+    work on both the project-pages URL and the custom domain.
+    """
+    reports_dir = data_dir / "reports"
+    if not template_path.exists() or not reports_dir.exists():
+        return []
+
+    with open(template_path, 'r', encoding='utf-8') as f:
+        template = f.read()
+
+    written = []
+    for jf in sorted(reports_dir.glob("*.json")):
+        if jf.name.startswith("_"):
+            continue
+        try:
+            with open(jf, 'r', encoding='utf-8') as f:
+                r = json.load(f)
+        except Exception as e:
+            print(f"  WARNING: skipping unreadable report {jf.name}: {e}")
+            continue
+
+        slug = re.sub(r"[^a-z0-9-]", "", str(r.get("match_id") or jf.stem).lower())
+        if not slug:
+            print(f"  WARNING: skipping report with unusable match_id: {jf.name}")
+            continue
+
+        title = html.escape(str(r.get("title", "Untitled report")))
+        author = html.escape(str(r.get("author", "Anonymous")))
+        home = html.escape(str(r.get("match_team_home", "Bristol Rovers")))
+        away = html.escape(str(r.get("match_team_away", "Opponent")))
+        score_h = html.escape(str(r.get("match_score_home", "?")))
+        score_a = html.escape(str(r.get("match_score_away", "?")))
+        comp = html.escape(str(r.get("competition", "League Two")))
+        venue = html.escape(str(r.get("match_venue", "The Memorial Stadium")))
+        match_date = html.escape(str(r.get("match_date", "")))
+
+        try:
+            dt = datetime.fromisoformat(str(r.get("date_submitted", "")).replace('Z', '+00:00'))
+            submitted = dt.strftime('%a %d %b, %H:%M')
+        except Exception:
+            submitted = "after the match"
+
+        meta_bits = [comp, venue]
+        if match_date:
+            meta_bits.append(match_date)
+        att = r.get("match_attendance")
+        if att:
+            try:
+                meta_bits.append(f"Att. {int(att):,}")
+            except (TypeError, ValueError):
+                pass
+
+        paragraphs = [p.strip() for p in str(r.get("body", "")).split("\n\n") if p.strip()]
+        body_html = "\n".join(f"      <p>{html.escape(p)}</p>" for p in paragraphs)
+
+        ratings = r.get("ratings") or {}
+        if ratings:
+            rows = []
+            ranked = sorted(ratings.items(), key=lambda kv: kv[1].get("avg", 0), reverse=True)
+            for name, d in ranked:
+                avg = float(d.get("avg", 0))
+                width = max(0, min(100, round(avg * 10)))
+                rows.append(
+                    f'      <div class="rate-row"><span class="nm">{html.escape(name)}</span>'
+                    f'<div class="bar"><i style="width:{width}%"></i></div>'
+                    f'<span class="val">{avg:.1f}</span></div>'
+                )
+            motm_name, motm_d = max(ratings.items(), key=lambda kv: kv[1].get("motm_votes", 0))
+            total_motm = sum(d.get("motm_votes", 0) for d in ratings.values())
+            fan_count = r.get("ratings_count") or total_motm
+            pct = round(100 * motm_d.get("motm_votes", 0) / total_motm) if total_motm else 0
+            ratings_html = (
+                '<div class="ratings">\n'
+                '      <h3>Fan Player Ratings &mdash; this match</h3>\n'
+                f'      <div class="rate-note">{fan_count} fans voted</div>\n'
+                + "\n".join(rows) + "\n"
+                f'      <div class="motm">Man of the Match: <b>{html.escape(motm_name)}</b> ({pct}% of votes)</div>\n'
+                '    </div>'
+            )
+        else:
+            ratings_html = ''
+
+        page = template
+        page = _report_block(page, 'doctitle',
+                             f'<title>&ldquo;{title}&rdquo; &mdash; {away if "Bristol Rovers" in r.get("match_team_home", "Bristol Rovers") else home} | GasDex fan reports</title>')
+        page = _report_block(page, 'description',
+                             f'<meta name="description" content="A fan-written Bristol Rovers match report on GasDex: {title}, by {author}.">')
+        page = _report_block(page, 'match',
+                             '      <div class="score-line">\n'
+                             f'        <span class="team">{home}</span>\n'
+                             f'        <span class="score">{score_h} &ndash; {score_a}</span>\n'
+                             f'        <span class="team">{away}</span>\n'
+                             '      </div>\n'
+                             f'      <div class="meta">{" &middot; ".join(meta_bits)}</div>')
+        page = _report_block(page, 'heading',
+                             f'    <h1 class="report-title">&ldquo;{title}&rdquo;</h1>\n'
+                             f'    <div class="byline">by <b>{author}</b> &middot; submitted {submitted} &middot; published after review</div>')
+        page = _report_block(page, 'body', body_html)
+        page = _report_block(page, 'ratings', ratings_html)
+
+        out_path = out_dir / f"report-{slug}.html"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        with open(out_path, 'w', encoding='utf-8') as f:
+            f.write(page)
+        written.append(out_path)
+
+    if written:
+        print(f"✓ Rendered {len(written)} fan report page(s) to {out_dir}/report-*.html")
+    return written
+
+
 def main():
     root = Path(__file__).resolve().parent.parent
     template_path = root / "templates" / "index.template.html"
@@ -597,6 +725,13 @@ def main():
             feed_news,
             club_data.get("items", []),
             youtube_data.get("items", []),
+        )
+        # Approved fan match reports (approve-by-file flow —
+        # docs/REPORT-PUBLISHING.md)
+        build_reports(
+            root / "templates" / "report.template.html",
+            data_dir,
+            root / "out",
         )
         return 0
     except Exception as e:

@@ -257,6 +257,19 @@ try{
   var RATINGS_ENDPOINT = 'https://gasdex-ratings.gasdex.workers.dev';
   var MATCH_ID = 'gillingham-h-20260711';
 
+  /* One-ballot-per-fan token, held in localStorage (FIRST-party storage —
+     survives in Brave/Safari/Firefox, unlike the worker's cross-site cookie,
+     which privacy browsers bin between sessions). Sent in the ballot body;
+     the worker echoes the canonical token back and we store that. */
+  var TOKEN_KEY = 'gasdex-ballot-token';
+  function getStoredToken(){
+    try { return localStorage.getItem(TOKEN_KEY) || ''; } catch(e){ return ''; }
+  }
+  function storeToken(t){
+    if(!t) return;
+    try { localStorage.setItem(TOKEN_KEY, t); } catch(e){ /* private mode etc. */ }
+  }
+
   function showResults(){
     document.getElementById('ballot').style.display = 'none';
     document.getElementById('results').style.display = 'block';
@@ -334,13 +347,17 @@ try{
       body: JSON.stringify({
         match_id: MATCH_ID,
         scores: scores,
-        motm: motm.closest('.vote-row').getAttribute('data-player')
+        motm: motm.closest('.vote-row').getAttribute('data-player'),
+        ballot_token: getStoredToken() || undefined
       })
     }).then(function(r){
       if(r.ok){
-        return fetchAggregate().then(function(agg){
-          renderAggregate(agg);
-          showResults();
+        return r.json().catch(function(){ return {}; }).then(function(body){
+          storeToken(body && body.ballot_token);
+          return fetchAggregate().then(function(agg){
+            renderAggregate(agg);
+            showResults();
+          });
         });
       }
       /* Rejected: read the worker's reason and respond appropriately. */
@@ -363,6 +380,8 @@ try{
         err.textContent = 'Voting for this match has closed.';
       }else if(reason.indexOf('rate limited') !== -1){
         err.textContent = 'Too many attempts \u2014 please wait a few minutes and try again.';
+      }else if(reason.indexOf('vote limit') !== -1){
+        err.textContent = 'The vote limit for your network has been reached for this match.';
       }else{
         err.textContent = "Sorry — your ballot didn't send. Please try again in a minute.";
       }
@@ -372,5 +391,7 @@ try{
 })();
 
 </script>
+<script data-goatcounter="https://gasdex.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

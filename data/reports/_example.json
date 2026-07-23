@@ -1,0 +1,21 @@
+{
+  "_comment": "COPY THIS FILE to approve a fan report. Save as <match_id>.json (e.g. york-city-a-20260815.json) in this folder — files starting with _ are ignored by the build. Full steps: docs/REPORT-PUBLISHING.md",
+  "match_id": "york-city-a-20260815",
+  "title": "Robbed at the Mem",
+  "author": "GasHead72",
+  "date_submitted": "2026-08-15T21:40:00+01:00",
+  "competition": "League Two",
+  "match_team_home": "Bristol Rovers",
+  "match_team_away": "Gillingham",
+  "match_score_home": 0,
+  "match_score_away": 1,
+  "match_date": "Sat 15 Aug 2026",
+  "match_venue": "The Memorial Stadium",
+  "match_attendance": 9114,
+  "body": "Paste the report text here. Blank lines separate paragraphs.\n\nLike this — each blank-line-separated chunk becomes its own paragraph on the page. HTML is escaped automatically, so plain text only.",
+  "ratings_count": 214,
+  "ratings": {
+    "J. Ward": { "avg": 8.2, "motm_votes": 130 },
+    "Sotiriou": { "avg": 7.1, "motm_votes": 40 }
+  }
+}
