@@ -51,6 +51,7 @@
   .news-item{padding:12px 0;border-bottom:1px solid #ddd;display:flex;gap:8px;align-items:flex-start}
   .news-item:last-child{border-bottom:none}
   .news-item .ico{flex-shrink:0;width:16px;text-align:center;padding-top:1px}
+  .news-item .ico svg{width:13px;height:13px;vertical-align:-2px;color:#123f77}
   .news-item .content{flex:1}
   .news-item .date{font-size:10px;color:#8a8a90;white-space:nowrap;text-align:right;flex-shrink:0}
 
@@ -109,6 +110,11 @@
 </head>
 <body>
 
+<!-- Feed icon (Option B, session 11): inline SVG symbol, see index. -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-news" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M4.8 6h6.4M4.8 8.3h6.4M4.8 10.6h3.8"/></symbol>
+</svg>
+
 <div class="mast-mini">
   <a class="home-link" href="index.html" title="Back to the index">
     <span class="crest-mini"><img class="logo-dark" src="assets/logo-mark-dark.png" alt=""><img class="logo-light" src="assets/logo-mark-light.png" alt=""></span>
@@ -126,7 +132,7 @@
 
     <ul class="news-list">
       <li class="news-item">
-        <span class="ico">&#128240;</span>
+        <span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-news"/></svg></span>
         <div class="content">
           <a href="#" class="ext" target="_blank" rel="noopener">Rovers boss praises &quot;unfair&quot; defeat response</a>
           <span class="tag-new">NEW</span>
@@ -134,7 +140,7 @@
         </div>
       </li>
       <li class="news-item">
-        <span class="ico">&#128240;</span>
+        <span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-news"/></svg></span>
         <div class="content">
           <a href="#" class="ext" target="_blank" rel="noopener">League Two weekend preview: Grimsby test awaits</a>
           <span class="tag-new">NEW</span>
@@ -142,56 +148,56 @@
         </div>
       </li>
       <li class="news-item">
-        <span class="ico">&#128240;</span>
+        <span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-news"/></svg></span>
         <div class="content">
           <a href="#" class="ext" target="_blank" rel="noopener">Sotiriou attracting interest after hot streak</a>
           <span class="when">FLW &middot; 1d</span>
         </div>
       </li>
       <li class="news-item">
-        <span class="ico">&#128240;</span>
+        <span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-news"/></svg></span>
         <div class="content">
           <a href="#" class="ext" target="_blank" rel="noopener">Memorial Stadium redevelopment: latest</a>
           <span class="when">BristolLive &middot; 2d</span>
         </div>
       </li>
       <li class="news-item">
-        <span class="ico">&#128240;</span>
+        <span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-news"/></svg></span>
         <div class="content">
           <a href="#" class="ext" target="_blank" rel="noopener">Fan gallery: best photos from Barrow away</a>
           <span class="when">Bristol Post &middot; 3d</span>
         </div>
       </li>
       <li class="news-item">
-        <span class="ico">&#128240;</span>
+        <span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-news"/></svg></span>
         <div class="content">
           <a href="#" class="ext" target="_blank" rel="noopener">Analysis: what went wrong at Gillingham</a>
           <span class="when">WeAreSpartans &middot; 4d</span>
         </div>
       </li>
       <li class="news-item">
-        <span class="ico">&#128240;</span>
+        <span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-news"/></svg></span>
         <div class="content">
           <a href="#" class="ext" target="_blank" rel="noopener">Loan move confirmed for summer prospect</a>
           <span class="when">Official &middot; 5d</span>
         </div>
       </li>
       <li class="news-item">
-        <span class="ico">&#128240;</span>
+        <span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-news"/></svg></span>
         <div class="content">
           <a href="#" class="ext" target="_blank" rel="noopener">Pre-season tour dates announced</a>
           <span class="when">BristolLive &middot; 6d</span>
         </div>
       </li>
       <li class="news-item">
-        <span class="ico">&#128240;</span>
+        <span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-news"/></svg></span>
         <div class="content">
           <a href="#" class="ext" target="_blank" rel="noopener">Academy update: five players earn pro terms</a>
           <span class="when">Official &middot; 1w</span>
         </div>
       </li>
       <li class="news-item">
-        <span class="ico">&#128240;</span>
+        <span class="ico"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-news"/></svg></span>
         <div class="content">
           <a href="#" class="ext" target="_blank" rel="noopener">Injury news: three return to full training</a>
           <span class="when">BristolLive &middot; 1w</span>

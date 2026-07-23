@@ -147,7 +147,8 @@ The builder strictly follows the approved design markup from `site/index.html`:
 - Format: e.g., "2h ago", "5h", "1d", "2d", "Fri"
 - Inferred from ISO `published` date
 - Logic: < 60m = "Xm ago"; < 24h = "Xh ago"; < 7d = "Xd"; >= 7d = day abbreviation
-- CSS class: `.when` (news/YouTube) or `.when2` (fixtures)
+- CSS class: `.when` (news/YouTube). (`.when2` was the fixtures class until
+  session 11 — fixtures now use the `.comp` meta line, see below.)
 
 **NEW tag**:
 - Shown if item published within last 48 hours
@@ -163,18 +164,21 @@ The builder strictly follows the approved design markup from `site/index.html`:
 <div class="score-row">
   <span class="opp">OPPONENT (H|A)</span>
   <span class="sc w|d|l">OUTCOME SCORE</span>
+  <span class="comp">COMPETITION</span>
 </div>
 ```
-Classes: `.sc` (score), outcome class `.w` (win), `.d` (draw), `.l` (loss)
+Classes: `.sc` (score), outcome class `.w` (win), `.d` (draw), `.l` (loss);
+`.comp` (small grey line under the row) omitted if competition unknown.
 
-### Fixture rows
+### Fixture rows (Option D layout, session 11)
 ```html
 <div class="fix-row">
   <span class="opp">OPPONENT (H|A)</span>
-  <span class="when2">DAY DATE, TIME</span>
+  <span class="comp">DAY DATE &middot; <b>TIME</b> &middot; COMPETITION</span>
 </div>
 ```
-E.g., "Sat 25 Jul, 15:00"
+E.g., "Sat 08 Aug · 15:00 · League Cup". One grey meta line under the
+opponent; TBC kickoffs render "time TBC"; missing segments are skipped.
 
 ### List items (news, club, YouTube)
 ```html

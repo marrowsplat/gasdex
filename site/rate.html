@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Rate the Bristol Rovers players after every match — one ballot per fan, aggregated ratings published automatically on GasDex.">
+<meta name="description" content="Rate the Bristol Rovers players after every match — one vote per fan, aggregated ratings published automatically on GasDex.">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon-180.png">
@@ -169,7 +169,7 @@
 
     <div id="ballot" style="display:none">
       <h1>Rate the players</h1>
-      <p>Score every player out of 10, pick your Man of the Match, and press submit. One ballot per fan per match &mdash; voting closes 48 hours after full time.</p>
+      <p>Score every player out of 10, pick your Man of the Match, and press submit. One vote per fan per match &mdash; voting closes 48 hours after full time.</p>
       <div id="voteRows"></div>
       <div class="submit-bar">
         <button class="btn" id="submitBtn" type="button">Submit my ratings</button>
@@ -179,7 +179,7 @@
 
     <div id="results">
       <h1>Fan ratings so far</h1>
-      <div class="thanks">Thanks &mdash; your ballot has been counted. <span id="tally">215</span> fans have voted.</div>
+      <div class="thanks">Thanks &mdash; your vote has been counted. <span id="tally">215</span> fans have voted.</div>
 
       <div class="rate-row"><span class="nm">J. Ward</span><div class="bar"><i style="width:82%"></i></div><span class="val">8.2</span></div>
       <div class="rate-row"><span class="nm">R. Sotiriou</span><div class="bar"><i style="width:71%"></i></div><span class="val">7.1</span></div>
@@ -191,7 +191,7 @@
       <div class="rate-row"><span class="nm">P. Omochere</span><div class="bar"><i style="width:55%"></i></div><span class="val">5.5</span></div>
 
       <div class="motm-res">Man of the Match: <b>Jed Ward</b> (61% of votes)</div>
-      <p class="note" style="margin-top:12px">Averages update as ballots come in. Final ratings are published on the index and in the match report.</p>
+      <p class="note" style="margin-top:12px">Averages update as votes come in. Final ratings are published on the index and in the match report.</p>
     </div>
 
   </div>
@@ -338,7 +338,7 @@ try{
      If the aggregate can't be fetched, fall back to a plain thank-you (never
      show the sample numbers after a real vote). */
   function renderAggregate(agg, lead){
-    lead = lead || 'Thanks \u2014 your ballot has been counted.';
+    lead = lead || 'Thanks \u2014 your vote has been counted.';
     var res = document.getElementById('results');
     var thanks = res.querySelector('.thanks');
     res.querySelectorAll('.rate-row').forEach(function(r){ r.remove(); });
@@ -446,7 +446,7 @@ try{
       }else if(reason.indexOf('vote limit') !== -1){
         err.textContent = 'The vote limit for your network has been reached for this match.';
       }else{
-        err.textContent = "Sorry — your ballot didn't send. Please try again in a minute.";
+        err.textContent = "Sorry — your vote didn't send. Please try again in a minute.";
       }
       err.style.display = 'inline';
     });
@@ -460,7 +460,7 @@ try{
       .then(function(r){ return r.ok ? r.json() : null; })
       .then(function(cur){
         if(!cur || !cur.status || cur.status === 'none'){
-          notice('No ballot is open right now',
+          notice('No vote is open right now',
             'Player ratings open at kick-off on matchdays \u2014 check back after the next game.');
           return;
         }
