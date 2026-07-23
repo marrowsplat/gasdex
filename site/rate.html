@@ -270,6 +270,23 @@ try{
     try { localStorage.setItem(TOKEN_KEY, t); } catch(e){ /* private mode etc. */ }
   }
 
+  /* Per-match "I've voted" memory so returning voters land straight on the
+     results instead of a ballot the worker would reject anyway. UX only —
+     clearing it doesn't allow a revote (the worker still blocks by token). */
+  var VOTED_KEY = 'gasdex-voted-' + MATCH_ID;
+  function hasVotedHere(){
+    try { return localStorage.getItem(VOTED_KEY) === '1'; } catch(e){ return false; }
+  }
+  function rememberVoted(){
+    try { localStorage.setItem(VOTED_KEY, '1'); } catch(e){}
+  }
+
+  function fetchAggregate(){
+    return fetch(RATINGS_ENDPOINT + '/aggregate?match_id=' + encodeURIComponent(MATCH_ID))
+      .then(function(a){ return a.ok ? a.json() : null; })
+      .catch(function(){ return null; });
+  }
+
   function showResults(){
     document.getElementById('ballot').style.display = 'none';
     document.getElementById('results').style.display = 'block';
@@ -335,11 +352,6 @@ try{
         parseInt(row.querySelector('.scores button.sel').getAttribute('data-v'), 10);
     });
     var btn = this; btn.disabled = true;
-    function fetchAggregate(){
-      return fetch(RATINGS_ENDPOINT + '/aggregate?match_id=' + encodeURIComponent(MATCH_ID))
-        .then(function(a){ return a.ok ? a.json() : null; })
-        .catch(function(){ return null; });
-    }
     fetch(RATINGS_ENDPOINT + '/ballot', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
@@ -354,6 +366,7 @@ try{
       if(r.ok){
         return r.json().catch(function(){ return {}; }).then(function(body){
           storeToken(body && body.ballot_token);
+          rememberVoted();
           return fetchAggregate().then(function(agg){
             renderAggregate(agg);
             showResults();
@@ -365,6 +378,7 @@ try{
         var reason = (body && body.error) || '';
         if(reason.indexOf('already voted') !== -1){
           /* Not an error from the fan's point of view — show the results. */
+          rememberVoted();
           return fetchAggregate().then(function(agg){
             renderAggregate(agg, 'You\u2019ve already voted on this match.');
             showResults();
@@ -388,6 +402,15 @@ try{
       err.style.display = 'inline';
     });
   });
+
+  /* On load: if this browser has already voted on this match, skip the ballot
+     and go straight to the live results. */
+  if(RATINGS_ENDPOINT && hasVotedHere()){
+    fetchAggregate().then(function(agg){
+      renderAggregate(agg, 'You\u2019ve already voted on this match.');
+      showResults();
+    });
+  }
 })();
 
 </script>
