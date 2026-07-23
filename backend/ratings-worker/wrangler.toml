@@ -3,6 +3,12 @@ main = "worker.js"
 compatibility_date = "2024-06-01"
 workers_dev = true
 
+# Matchday ballot automation. The cron fires every 5 minutes but no-ops
+# (zero API calls) outside matchday windows — see worker.js runCron().
+# Requires the FOOTBALL_API_KEY secret: `wrangler secret put FOOTBALL_API_KEY`
+[triggers]
+crons = ["*/5 * * * *"]
+
 # KV namespace binding for storing ballots and aggregates
 [[kv_namespaces]]
 binding = "GASDEX_RATINGS"

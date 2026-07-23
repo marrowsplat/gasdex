@@ -50,10 +50,15 @@ in `docs/backend-notes.md`.
       first vote. Live retest: second ballot rejected. rate.html (6250cf6)
       now shows rejected repeat voters the live results screen instead of
       an error — confirm on the live site after the next Pages build.
-- [ ] NOTE: ballot configs must be seeded per match before voting opens:
-      `wrangler kv key put "config:<match_id>" '<json>' --binding
-      GASDEX_RATINGS --preview false --remote` (players list must match
-      rate.html). Automating this per fixture is a roadmap item.
+- [x] Ballot configs are now AUTOMATED — the worker's 5-minute cron opens
+      each ballot from the confirmed line-up (squad fallback at kick-off)
+      and the pages fetch `/current` instead of using a hard-coded match
+      id. Manual seeding is no longer needed. Setup + operations:
+      docs/BALLOT-AUTOMATION.md.
+- [ ] Subscribe to the API-Football paid plan (~$19/mo, Aug–May), then:
+      `cd backend/ratings-worker`, `wrangler secret put FOOTBALL_API_KEY`
+      (paste key at the prompt — never in a file), `wrangler deploy
+      --env=""`. Verify at /auto-status.
 
 ## 3. After both are live
 

@@ -617,21 +617,39 @@
 </script>
 <script>
 (function(){
-  /* Live fan ratings (22 Jul 2026): the box ships with a neutral message and
-     is upgraded in place from the ratings worker's real /aggregate. On any
-     failure (worker down, no ballots yet) the neutral message stays — the
-     old static sample numbers are gone for good. */
+  /* Live fan ratings (22 Jul 2026; automated 23 Jul): the box ships with a
+     neutral message and is upgraded in place from the ratings worker. The
+     current match now comes from the worker's /current endpoint (the matchday
+     cron opens ballots at kickoff) — no hard-coded match id. On any failure
+     (worker down, no ballot yet) the neutral message stays. */
   var RATINGS_ENDPOINT = 'https://gasdex-ratings.gasdex.workers.dev';
-  var MATCH_ID = 'gillingham-h-20260711';
   var note = document.getElementById('rateNote');
   var status = document.getElementById('rateStatus');
   if(!note || !status || !RATINGS_ENDPOINT) return;
-  fetch(RATINGS_ENDPOINT + '/aggregate?match_id=' + encodeURIComponent(MATCH_ID))
+  fetch(RATINGS_ENDPOINT + '/current')
     .then(function(r){ return r.ok ? r.json() : null; })
-    .then(function(agg){
+    .then(function(cur){
+      if(!cur || !cur.match_id || cur.status === 'none') return null;
+      return fetch(RATINGS_ENDPOINT + '/aggregate?match_id=' + encodeURIComponent(cur.match_id))
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(agg){ return { cur: cur, agg: agg }; });
+    })
+    .then(function(res){
+      if(!res) return;
+      var cur = res.cur, agg = res.agg;
+      var label = cur.label || '';
+      if(cur.status === 'open' && (!agg || !agg.count)){
+        /* Ballot is open but no votes yet — invite fans in. */
+        note.textContent = '';
+        if(label) note.appendChild(document.createTextNode(label + ' \u00b7 '));
+        var vb = document.createElement('b');
+        vb.textContent = 'voting is open now';
+        note.appendChild(vb);
+        return;
+      }
       if(!agg || !agg.count || !agg.players) return;
       note.textContent = '';
-      note.appendChild(document.createTextNode('vs Gillingham (H) \u00b7 '));
+      if(label) note.appendChild(document.createTextNode(label + ' \u00b7 '));
       var nb = document.createElement('b');
       nb.textContent = agg.count === 1 ? '1 fan voted' : agg.count + ' fans voted';
       note.appendChild(nb);

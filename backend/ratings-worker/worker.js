@@ -5,10 +5,15 @@
  * - POST /ballot: Accept and store fan player ratings + MotM pick
  * - GET /aggregate?match_id=...: Return aggregated ratings
  * - GET /ballot-config?match_id=...: Return ballot definition (players, open/close times)
+ * - GET /current: Return the current (active or most recent) ballot + its state
+ * - GET /auto-status: Last cron run log (for the daily Slack digest / debugging)
+ * - scheduled(): matchday cron — auto-creates ballot configs from API-Football
+ *   lineups (fallback: full squad), appends subs who came on after full time.
+ *   See docs/BALLOT-AUTOMATION.md. Requires the FOOTBALL_API_KEY secret.
  *
  * Storage: KV namespace (GASDEX_RATINGS)
  * Rate limiting: basic IP-based throttle
- * One-ballot-per-fan: hashed IP + browser token cookie (best-effort, documented limits)
+ * One-ballot-per-fan: localStorage token in ballot body (+ legacy cookie), IP cap backstop
  */
 
 const BALLOT_WINDOW_HOURS = 48;
@@ -52,6 +57,10 @@ async function handleRequest(request, env) {
       return await handleGetAggregate(url, env, corsHeaders);
     } else if (path === '/ballot-config' && request.method === 'GET') {
       return await handleGetBallotConfig(url, env, corsHeaders);
+    } else if (path === '/current' && request.method === 'GET') {
+      return await handleGetCurrent(env, corsHeaders);
+    } else if (path === '/auto-status' && request.method === 'GET') {
+      return await handleGetAutoStatus(env, corsHeaders);
     } else {
       return new Response(JSON.stringify({ error: 'not found' }), {
         status: 404,
@@ -157,12 +166,33 @@ async function handlePostBallot(request, env, corsHeaders) {
   }
 
   const now = Date.now();
+  const openTime = new Date(ballotConfig.openAt).getTime();
+  if (Number.isFinite(openTime) && now < openTime) {
+    return new Response(JSON.stringify({ error: 'ballot not yet open' }), {
+      status: 400,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
   const closeTime = new Date(ballotConfig.closeAt).getTime();
   if (now > closeTime) {
     return new Response(JSON.stringify({ error: 'ballot window has closed' }), {
       status: 400,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
+  }
+
+  // Only players on the ballot may be scored (stops junk names polluting the
+  // aggregate). Configs may store players as strings or {name, pos} objects.
+  const allowedNames = configPlayerNames(ballotConfig);
+  if (allowedNames.length > 0) {
+    for (const player of Object.keys(scores)) {
+      if (!allowedNames.includes(player)) {
+        return new Response(JSON.stringify({ error: `unknown player: ${player}` }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
   }
 
   // One-ballot-per-fan. The token is the voter identity and travels TWO ways:
@@ -349,6 +379,374 @@ async function handleGetBallotConfig(url, env, corsHeaders) {
 }
 
 /**
+ * GET /current
+ * Returns the current ballot (the one the cron — or a manual seed — last
+ * pointed the `current` KV key at) plus its live state, so the pages never
+ * need a hard-coded match id:
+ *   { status: 'none' | 'upcoming' | 'open' | 'closed', match_id, label,
+ *     fixture, openAt, closeAt, source, players: [{name, pos}] }
+ */
+async function handleGetCurrent(env, corsHeaders) {
+  const jsonHeaders = { ...corsHeaders, 'Content-Type': 'application/json' };
+  const current = await env.GASDEX_RATINGS.get('current', 'json');
+  if (!current || !current.match_id) {
+    return new Response(JSON.stringify({ status: 'none' }), { status: 200, headers: jsonHeaders });
+  }
+  const config = await env.GASDEX_RATINGS.get(`config:${current.match_id}`, 'json');
+  if (!config) {
+    return new Response(JSON.stringify({ status: 'none' }), { status: 200, headers: jsonHeaders });
+  }
+  const now = Date.now();
+  const openAt = new Date(config.openAt).getTime();
+  const closeAt = new Date(config.closeAt).getTime();
+  let status = 'open';
+  if (Number.isFinite(openAt) && now < openAt) status = 'upcoming';
+  else if (Number.isFinite(closeAt) && now > closeAt) status = 'closed';
+  const players = (config.players || []).map(function (p) {
+    return typeof p === 'string' ? { name: p, pos: '' } : { name: p.name, pos: p.pos || '' };
+  });
+  return new Response(JSON.stringify({
+    status,
+    match_id: current.match_id,
+    label: config.label || '',
+    fixture: config.fixture || null,
+    openAt: config.openAt || null,
+    closeAt: config.closeAt || null,
+    source: config.source || 'manual',
+    players
+  }), { status: 200, headers: jsonHeaders });
+}
+
+/**
+ * GET /auto-status — last cron run log (read-only; used by the Slack digest).
+ */
+async function handleGetAutoStatus(env, corsHeaders) {
+  const log = await env.GASDEX_RATINGS.get('auto:log', 'json');
+  return new Response(JSON.stringify(log || { note: 'cron has not run yet' }), {
+    status: 200,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+  });
+}
+
+/* ========================================================================== *
+ * BALLOT AUTOMATION (matchday cron)
+ *
+ * Runs every 5 minutes (wrangler.toml [triggers]) and NO-OPS instantly —
+ * zero API calls — unless the current time is inside a matchday window
+ * taken from the site's own published fixtures (out/fixtures.json, built
+ * from TheSportsDB + the maintainer's overrides file).
+ *
+ * Matchday flow (frugal by design — ~15-20 API calls per matchday):
+ *   KO-60m .. KO+3h : poll /fixtures/lineups every ~5 min until the real XI
+ *                     lands, then write config:<match_id> (openAt = kickoff,
+ *                     closeAt = kickoff + 50h ≈ full time + 48h) and stop.
+ *   KO, no lineups  : fall back to a full-squad ballot (cached squad, one
+ *                     API call a month) so voting ALWAYS opens at kickoff;
+ *                     lineup polling continues and upgrades it in place.
+ *   KO+105m onward  : once the fixture reports FT, one /fixtures/events call
+ *                     appends the subs who actually came on. Done.
+ *
+ * The API key is the FOOTBALL_API_KEY secret (wrangler secret put) — it is
+ * never present in this repo. Without it the cron logs and does nothing.
+ * ========================================================================== */
+
+const AF_BASE = 'https://v3.football.api-sports.io';
+const AF_TEAM_ID = 1334;      // Bristol Rovers on API-Football
+const AF_SEASON = 2026;       // 2026/27
+const SITE_FIXTURES_URL = 'https://marrowsplat.github.io/gasdex/fixtures.json';
+const CLOSE_HOURS_AFTER_KO = 50;      // ≈ "48 hours after full time"
+const LINEUP_POLL_START_MIN = 60;     // start polling an hour before kickoff
+const LINEUP_POLL_SPACING_MS = 4.5 * 60000;
+const EVENTS_POLL_SPACING_MS = 10 * 60000;
+
+async function runCron(env, now) {
+  now = now || Date.now();
+  const log = { ran_at: new Date(now).toISOString(), actions: [], api_calls: 0 };
+  try {
+    const fixtures = await getSiteFixtures(env, now, log);
+    const fx = pickActiveFixture(fixtures, now);
+    if (!fx) {
+      log.actions.push('no matchday window');
+      return log;
+    }
+    log.match_id = fx.match_id;
+    await runMatchday(env, fx, now, log);
+  } catch (e) {
+    log.error = String((e && e.message) || e);
+  } finally {
+    try { await env.GASDEX_RATINGS.put('auto:log', JSON.stringify(log)); } catch (e) { /* best-effort */ }
+  }
+  return log;
+}
+
+async function runMatchday(env, fx, now, log) {
+  const ko = fx.ko;
+  const stateKey = `auto:state:${fx.match_id}`;
+  const cfgKey = `config:${fx.match_id}`;
+  const state = await env.GASDEX_RATINGS.get(stateKey, 'json') || {};
+  let config = await env.GASDEX_RATINGS.get(cfgKey, 'json');
+
+  // 1. Resolve the API-Football fixture id (cached season map, by date).
+  if (!state.afId) {
+    const map = await getAfFixtureMap(env, now, log);
+    state.afId = (map && map[fx.date]) || null;
+    if (!state.afId) log.actions.push(`no API fixture id for ${fx.date}`);
+  }
+
+  // 2. Lineup polling — pre-KO for the real XI; keeps going after KO so a
+  //    squad-fallback ballot gets upgraded the moment lineups land.
+  const lineupWindow = now >= ko - LINEUP_POLL_START_MIN * 60000 && now <= ko + 3 * 3600000;
+  if (state.afId && !state.lineupsDone && lineupWindow &&
+      (!state.lastLineupPoll || now - state.lastLineupPoll >= LINEUP_POLL_SPACING_MS)) {
+    state.lastLineupPoll = now;
+    const players = await afLineups(env, state.afId, log);
+    if (players && players.length) {
+      config = buildBallotConfig(fx, ko, players, 'lineups');
+      await env.GASDEX_RATINGS.put(cfgKey, JSON.stringify(config));
+      await setCurrent(env, fx.match_id);
+      state.lineupsDone = true;
+      log.actions.push(`config written from lineups (${players.length} players)`);
+    } else {
+      log.actions.push('lineups not available yet');
+    }
+  }
+
+  // 3. Kickoff fallback: voting must ALWAYS open at KO. No lineups yet →
+  //    open a full-squad ballot (upgraded in place when lineups arrive).
+  if (!config && now >= ko) {
+    const squad = await getSquad(env, now, log);
+    if (squad && squad.length) {
+      config = buildBallotConfig(fx, ko, squad, 'squad');
+      await env.GASDEX_RATINGS.put(cfgKey, JSON.stringify(config));
+      await setCurrent(env, fx.match_id);
+      log.actions.push(`config written from squad fallback (${squad.length} players)`);
+    } else {
+      log.actions.push('squad fallback unavailable');
+    }
+  }
+
+  // 4. Post-match: when the fixture reports full time, append the subs who
+  //    actually came on (one events call), then stop for good.
+  if (config && state.afId && !state.eventsDone && now >= ko + 105 * 60000 &&
+      (!state.lastEventsPoll || now - state.lastEventsPoll >= EVENTS_POLL_SPACING_MS)) {
+    state.lastEventsPoll = now;
+    const status = await afFixtureStatus(env, state.afId, log);
+    if (status && ['FT', 'AET', 'PEN'].indexOf(status) !== -1) {
+      const subs = await afSubsOn(env, state.afId, log);
+      if (subs && subs.length) {
+        const names = configPlayerNames(config);
+        subs.forEach(function (s) {
+          if (names.indexOf(s.name) === -1) config.players.push(s);
+        });
+        await env.GASDEX_RATINGS.put(cfgKey, JSON.stringify(config));
+        log.actions.push(`appended ${subs.length} subs from events`);
+      } else {
+        log.actions.push('no substitution events returned');
+      }
+      state.eventsDone = true;
+      state.lineupsDone = true; // no further lineup polling after FT
+    } else if (now > ko + 5 * 3600000) {
+      state.eventsDone = true;  // give up quietly ~5h after KO
+      log.actions.push('gave up waiting for FT status');
+    } else {
+      log.actions.push(`fixture status ${status || 'unknown'} — waiting for FT`);
+    }
+  }
+
+  await env.GASDEX_RATINGS.put(stateKey, JSON.stringify(state));
+}
+
+function buildBallotConfig(fx, ko, players, source) {
+  return {
+    match_id: fx.match_id,
+    label: 'vs ' + fx.opponent + ' (' + fx.venue + ')',
+    fixture: {
+      opponent: fx.opponent,
+      venue: fx.venue,
+      competition: fx.competition || '',
+      date: fx.date,
+      kickoff: fx.kickoff || ''
+    },
+    openAt: new Date(ko).toISOString(),
+    closeAt: new Date(ko + CLOSE_HOURS_AFTER_KO * 3600000).toISOString(),
+    source: source,
+    players: players
+  };
+}
+
+async function setCurrent(env, matchId) {
+  await env.GASDEX_RATINGS.put('current', JSON.stringify({
+    match_id: matchId,
+    set_at: new Date().toISOString()
+  }));
+}
+
+function configPlayerNames(config) {
+  return (config.players || []).map(function (p) {
+    return typeof p === 'string' ? p : p.name;
+  });
+}
+
+/* ---- site fixtures (free — fetched from our own published JSON) ---------- */
+
+async function getSiteFixtures(env, now, log) {
+  const cacheKey = 'auto:fixtures';
+  const cached = await env.GASDEX_RATINGS.get(cacheKey, 'json');
+  if (cached && cached.fetched_at && now - cached.fetched_at < 6 * 3600000) {
+    return cached.fixtures || [];
+  }
+  const url = env.FIXTURES_URL || SITE_FIXTURES_URL;
+  try {
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) throw new Error('fixtures fetch HTTP ' + res.status);
+    const data = await res.json();
+    const fixtures = (data.fixtures || []).filter(function (f) { return f && f.match_id && f.date; });
+    await env.GASDEX_RATINGS.put(cacheKey, JSON.stringify({ fetched_at: now, fixtures: fixtures }));
+    log.actions.push(`fixtures refreshed (${fixtures.length})`);
+    return fixtures;
+  } catch (e) {
+    log.actions.push('fixtures fetch failed: ' + String((e && e.message) || e));
+    return (cached && cached.fixtures) || [];
+  }
+}
+
+function pickActiveFixture(fixtures, now) {
+  // "Matchday window" = from 70 min before kickoff until 6 h after — wide
+  // enough for lineup polling, the KO fallback and the post-FT events call.
+  for (const f of fixtures) {
+    if (f.tbc) continue;
+    const ko = londonToEpoch(f.date, f.kickoff || '15:00');
+    if (!Number.isFinite(ko)) continue;
+    if (now >= ko - 70 * 60000 && now <= ko + 6 * 3600000) {
+      return Object.assign({}, f, { ko: ko });
+    }
+  }
+  return null;
+}
+
+/* Fixture kickoffs are London wall-clock times; Workers run in UTC. Convert
+ * via Intl (two-pass offset trick — handles GMT/BST automatically). */
+function londonToEpoch(dateStr, timeStr) {
+  const guess = Date.parse(dateStr + 'T' + timeStr + ':00Z');
+  if (!Number.isFinite(guess)) return NaN;
+  return guess - londonOffsetMs(guess);
+}
+
+function londonOffsetMs(epoch) {
+  const dtf = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London', hour12: false,
+    year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+  });
+  const parts = {};
+  dtf.formatToParts(epoch).forEach(function (p) { parts[p.type] = p.value; });
+  const hour = parts.hour === '24' ? '00' : parts.hour;
+  const asUtc = Date.parse(parts.year + '-' + parts.month + '-' + parts.day + 'T' + hour + ':' + parts.minute + ':00Z');
+  return asUtc - epoch;
+}
+
+/* ---- API-Football calls (metered; all responses cached where reusable) --- */
+
+async function afGet(env, path, log) {
+  if (!env.FOOTBALL_API_KEY) {
+    log.actions.push('FOOTBALL_API_KEY secret not set — skipping API call');
+    return null;
+  }
+  log.api_calls += 1;
+  try {
+    const res = await fetch(AF_BASE + path, { headers: { 'x-apisports-key': env.FOOTBALL_API_KEY } });
+    if (!res.ok) {
+      log.actions.push('API HTTP ' + res.status + ' for ' + path);
+      return null;
+    }
+    const data = await res.json();
+    if (data.errors && Object.keys(data.errors).length) {
+      log.actions.push('API error for ' + path + ': ' + JSON.stringify(data.errors));
+      return null;
+    }
+    return data;
+  } catch (e) {
+    log.actions.push('API fetch failed for ' + path + ': ' + String((e && e.message) || e));
+    return null;
+  }
+}
+
+async function getAfFixtureMap(env, now, log) {
+  const cacheKey = 'auto:afmap';
+  const cached = await env.GASDEX_RATINGS.get(cacheKey, 'json');
+  if (cached && cached.fetched_at && now - cached.fetched_at < 7 * 86400000) {
+    return cached.map || {};
+  }
+  const data = await afGet(env, `/fixtures?team=${AF_TEAM_ID}&season=${AF_SEASON}`, log);
+  if (!data) return (cached && cached.map) || {};
+  const map = {};
+  (data.response || []).forEach(function (r) {
+    const iso = r.fixture && r.fixture.date;   // ISO with offset
+    const id = r.fixture && r.fixture.id;
+    if (!iso || !id) return;
+    map[londonDateOf(new Date(iso).getTime())] = id;
+  });
+  await env.GASDEX_RATINGS.put(cacheKey, JSON.stringify({ fetched_at: now, map: map }));
+  log.actions.push(`AF fixture map refreshed (${Object.keys(map).length})`);
+  return map;
+}
+
+function londonDateOf(epoch) {
+  const dtf = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit' });
+  return dtf.format(epoch);   // YYYY-MM-DD
+}
+
+async function afLineups(env, afId, log) {
+  const data = await afGet(env, `/fixtures/lineups?fixture=${afId}`, log);
+  if (!data || !data.response || !data.response.length) return null;
+  const rovers = data.response.filter(function (r) { return r.team && r.team.id === AF_TEAM_ID; })[0];
+  if (!rovers || !rovers.startXI || !rovers.startXI.length) return null;
+  return rovers.startXI.map(function (p) {
+    return { name: p.player.name, pos: posShort(p.player.pos) };
+  });
+}
+
+async function afFixtureStatus(env, afId, log) {
+  const data = await afGet(env, `/fixtures?id=${afId}`, log);
+  if (!data || !data.response || !data.response.length) return null;
+  const f = data.response[0].fixture;
+  return (f && f.status && f.status.short) || null;
+}
+
+async function afSubsOn(env, afId, log) {
+  const data = await afGet(env, `/fixtures/events?fixture=${afId}&team=${AF_TEAM_ID}&type=subst`, log);
+  if (!data || !data.response) return null;
+  const out = [];
+  data.response.forEach(function (e) {
+    // For substitution events the incoming player is in `assist`.
+    const name = e.assist && e.assist.name;
+    if (name && !out.some(function (s) { return s.name === name; })) {
+      out.push({ name: name, pos: '' });
+    }
+  });
+  return out;
+}
+
+async function getSquad(env, now, log) {
+  const cacheKey = 'auto:squad';
+  const cached = await env.GASDEX_RATINGS.get(cacheKey, 'json');
+  if (cached && cached.fetched_at && now - cached.fetched_at < 30 * 86400000) {
+    return cached.players || [];
+  }
+  const data = await afGet(env, `/players/squads?team=${AF_TEAM_ID}`, log);
+  if (!data || !data.response || !data.response.length) return (cached && cached.players) || [];
+  const players = (data.response[0].players || []).map(function (p) {
+    return { name: p.name, pos: posShort((p.position || '').charAt(0)) };
+  });
+  await env.GASDEX_RATINGS.put(cacheKey, JSON.stringify({ fetched_at: now, players: players }));
+  log.actions.push(`squad refreshed (${players.length})`);
+  return players;
+}
+
+function posShort(p) {
+  return { G: 'GK', D: 'DF', M: 'MF', F: 'FW', A: 'FW' }[p] || '';
+}
+
+/**
  * Helpers
  */
 
@@ -412,5 +810,11 @@ function generateId() {
 export default {
   fetch(request, env, ctx) {
     return handleRequest(request, env);
+  },
+  scheduled(event, env, ctx) {
+    ctx.waitUntil(runCron(env));
   }
 };
+
+// Exposed for the node test harness (mocked KV + fetch).
+export { runCron, pickActiveFixture, londonToEpoch, buildBallotConfig };

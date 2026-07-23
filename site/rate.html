@@ -153,58 +153,24 @@
   <span class="kicker">Fan Player Ratings</span>
   <div class="sheet">
 
-    <div class="match-head">
+    <div class="match-head" id="matchHead" style="display:none">
       <div class="score-line">
-        <span class="team">Bristol Rovers</span>
-        <span class="score">0 &ndash; 1</span>
-        <span class="team">Gillingham</span>
+        <span class="team" id="teamHome">Bristol Rovers</span>
+        <span class="score" id="scoreMid">v</span>
+        <span class="team" id="teamAway"></span>
       </div>
-      <div class="meta">League Two &middot; The Memorial Stadium &middot; Sat 11 Jul 2026</div>
+      <div class="meta" id="matchMeta"></div>
     </div>
 
-    <div id="ballot">
+    <div id="notice" style="display:none">
+      <h1 id="noticeHead"></h1>
+      <p id="noticeText"></p>
+    </div>
+
+    <div id="ballot" style="display:none">
       <h1>Rate the players</h1>
       <p>Score every player out of 10, pick your Man of the Match, and press submit. One ballot per fan per match &mdash; voting closes 48 hours after full time.</p>
-      <div class="vote-row" data-player="J. Ward">
-        <span class="nm">J. Ward</span><span class="pos">GK</span>
-        <span class="scores"><button type="button" data-v="1">1</button><button type="button" data-v="2">2</button><button type="button" data-v="3">3</button><button type="button" data-v="4">4</button><button type="button" data-v="5">5</button><button type="button" data-v="6">6</button><button type="button" data-v="7">7</button><button type="button" data-v="8">8</button><button type="button" data-v="9">9</button><button type="button" data-v="10">10</button></span>
-        <span class="motm-pick"><button type="button" class="motm-btn">MotM</button></span>
-      </div>
-      <div class="vote-row" data-player="C. Taylor">
-        <span class="nm">C. Taylor</span><span class="pos">DF</span>
-        <span class="scores"><button type="button" data-v="1">1</button><button type="button" data-v="2">2</button><button type="button" data-v="3">3</button><button type="button" data-v="4">4</button><button type="button" data-v="5">5</button><button type="button" data-v="6">6</button><button type="button" data-v="7">7</button><button type="button" data-v="8">8</button><button type="button" data-v="9">9</button><button type="button" data-v="10">10</button></span>
-        <span class="motm-pick"><button type="button" class="motm-btn">MotM</button></span>
-      </div>
-      <div class="vote-row" data-player="T. Moore">
-        <span class="nm">T. Moore</span><span class="pos">DF</span>
-        <span class="scores"><button type="button" data-v="1">1</button><button type="button" data-v="2">2</button><button type="button" data-v="3">3</button><button type="button" data-v="4">4</button><button type="button" data-v="5">5</button><button type="button" data-v="6">6</button><button type="button" data-v="7">7</button><button type="button" data-v="8">8</button><button type="button" data-v="9">9</button><button type="button" data-v="10">10</button></span>
-        <span class="motm-pick"><button type="button" class="motm-btn">MotM</button></span>
-      </div>
-      <div class="vote-row" data-player="M. Forbes">
-        <span class="nm">M. Forbes</span><span class="pos">DF</span>
-        <span class="scores"><button type="button" data-v="1">1</button><button type="button" data-v="2">2</button><button type="button" data-v="3">3</button><button type="button" data-v="4">4</button><button type="button" data-v="5">5</button><button type="button" data-v="6">6</button><button type="button" data-v="7">7</button><button type="button" data-v="8">8</button><button type="button" data-v="9">9</button><button type="button" data-v="10">10</button></span>
-        <span class="motm-pick"><button type="button" class="motm-btn">MotM</button></span>
-      </div>
-      <div class="vote-row" data-player="L. McCormick">
-        <span class="nm">L. McCormick</span><span class="pos">MF</span>
-        <span class="scores"><button type="button" data-v="1">1</button><button type="button" data-v="2">2</button><button type="button" data-v="3">3</button><button type="button" data-v="4">4</button><button type="button" data-v="5">5</button><button type="button" data-v="6">6</button><button type="button" data-v="7">7</button><button type="button" data-v="8">8</button><button type="button" data-v="9">9</button><button type="button" data-v="10">10</button></span>
-        <span class="motm-pick"><button type="button" class="motm-btn">MotM</button></span>
-      </div>
-      <div class="vote-row" data-player="I. Hutchinson">
-        <span class="nm">I. Hutchinson</span><span class="pos">MF</span>
-        <span class="scores"><button type="button" data-v="1">1</button><button type="button" data-v="2">2</button><button type="button" data-v="3">3</button><button type="button" data-v="4">4</button><button type="button" data-v="5">5</button><button type="button" data-v="6">6</button><button type="button" data-v="7">7</button><button type="button" data-v="8">8</button><button type="button" data-v="9">9</button><button type="button" data-v="10">10</button></span>
-        <span class="motm-pick"><button type="button" class="motm-btn">MotM</button></span>
-      </div>
-      <div class="vote-row" data-player="R. Sotiriou">
-        <span class="nm">R. Sotiriou</span><span class="pos">FW</span>
-        <span class="scores"><button type="button" data-v="1">1</button><button type="button" data-v="2">2</button><button type="button" data-v="3">3</button><button type="button" data-v="4">4</button><button type="button" data-v="5">5</button><button type="button" data-v="6">6</button><button type="button" data-v="7">7</button><button type="button" data-v="8">8</button><button type="button" data-v="9">9</button><button type="button" data-v="10">10</button></span>
-        <span class="motm-pick"><button type="button" class="motm-btn">MotM</button></span>
-      </div>
-      <div class="vote-row" data-player="P. Omochere">
-        <span class="nm">P. Omochere</span><span class="pos">FW</span>
-        <span class="scores"><button type="button" data-v="1">1</button><button type="button" data-v="2">2</button><button type="button" data-v="3">3</button><button type="button" data-v="4">4</button><button type="button" data-v="5">5</button><button type="button" data-v="6">6</button><button type="button" data-v="7">7</button><button type="button" data-v="8">8</button><button type="button" data-v="9">9</button><button type="button" data-v="10">10</button></span>
-        <span class="motm-pick"><button type="button" class="motm-btn">MotM</button></span>
-      </div>
+      <div id="voteRows"></div>
       <div class="submit-bar">
         <button class="btn" id="submitBtn" type="button">Submit my ratings</button>
         <span class="err" id="err">Please rate every player and pick a Man of the Match.</span>
@@ -242,28 +208,28 @@ try{
 
 
 (function(){
-  var rows = document.querySelectorAll('.vote-row');
-  rows.forEach(function(row){
-    row.querySelectorAll('.scores button').forEach(function(b){
-      b.addEventListener('click', function(){
-        row.querySelectorAll('.scores button').forEach(function(x){ x.classList.remove('sel'); });
-        b.classList.add('sel');
-      });
-    });
-    row.querySelector('.motm-btn').addEventListener('click', function(){
-      document.querySelectorAll('.motm-btn').forEach(function(x){ x.classList.remove('sel'); });
-      this.classList.add('sel');
-    });
-  });
-  /* Live ratings Worker (Cloudflare). Empty string = demo mode. */
+  /* Live ratings Worker (Cloudflare). Empty string = demo mode (sample XI). */
   var RATINGS_ENDPOINT = 'https://gasdex-ratings.gasdex.workers.dev';
-  var MATCH_ID = 'gillingham-h-20260711';
-
-  /* One-ballot-per-fan token, held in localStorage (FIRST-party storage —
-     survives in Brave/Safari/Firefox, unlike the worker's cross-site cookie,
-     which privacy browsers bin between sessions). Sent in the ballot body;
-     the worker echoes the canonical token back and we store that. */
   var TOKEN_KEY = 'gasdex-ballot-token';
+
+  /* The current match comes from the worker's /current endpoint — nothing is
+     hard-coded any more. The matchday cron opens the ballot at kickoff with
+     the real XI (or the full squad until lineups land), appends the subs who
+     came on after full time, and closes it 48 hours later. */
+  var MATCH_ID = '';
+  var VOTED_KEY = '';
+
+  /* Demo-mode sample (design reference only — used when no endpoint is set) */
+  var SAMPLE_PLAYERS = [
+    {name:'J. Ward', pos:'GK'}, {name:'C. Taylor', pos:'DF'},
+    {name:'T. Moore', pos:'DF'}, {name:'M. Forbes', pos:'DF'},
+    {name:'L. McCormick', pos:'MF'}, {name:'I. Hutchinson', pos:'MF'},
+    {name:'R. Sotiriou', pos:'FW'}, {name:'P. Omochere', pos:'FW'}
+  ];
+
+  /* Durable one-vote-per-browser token: lives in FIRST-PARTY localStorage and
+     is sent in the ballot body, because Brave/Safari/Firefox bin the worker's
+     cross-site cookie between sessions. */
   function getStoredToken(){
     try { return localStorage.getItem(TOKEN_KEY) || ''; } catch(e){ return ''; }
   }
@@ -275,11 +241,12 @@ try{
   /* Per-match "I've voted" memory so returning voters land straight on the
      results instead of a ballot the worker would reject anyway. UX only —
      clearing it doesn't allow a revote (the worker still blocks by token). */
-  var VOTED_KEY = 'gasdex-voted-' + MATCH_ID;
   function hasVotedHere(){
+    if(!VOTED_KEY) return false;
     try { return localStorage.getItem(VOTED_KEY) === '1'; } catch(e){ return false; }
   }
   function rememberVoted(){
+    if(!VOTED_KEY) return;
     try { localStorage.setItem(VOTED_KEY, '1'); } catch(e){}
   }
 
@@ -289,9 +256,81 @@ try{
       .catch(function(){ return null; });
   }
 
+  function show(id){ document.getElementById(id).style.display = 'block'; }
+  function hide(id){ document.getElementById(id).style.display = 'none'; }
+
+  function notice(head, text){
+    hide('ballot'); hide('results');
+    document.getElementById('noticeHead').textContent = head;
+    document.getElementById('noticeText').textContent = text;
+    show('notice');
+  }
+
+  function formatDate(d){
+    try{
+      return new Date(d + 'T12:00:00').toLocaleDateString('en-GB',
+        {weekday:'short', day:'numeric', month:'short', year:'numeric'});
+    }catch(e){ return d; }
+  }
+
+  function fillMatchHead(cur){
+    var fx = cur.fixture || {};
+    var opp = fx.opponent || 'TBC';
+    document.getElementById('teamHome').textContent = fx.venue === 'A' ? opp : 'Bristol Rovers';
+    document.getElementById('teamAway').textContent = fx.venue === 'A' ? 'Bristol Rovers' : opp;
+    var meta = [];
+    if(fx.competition) meta.push(fx.competition);
+    if(fx.date) meta.push(formatDate(fx.date));
+    if(fx.kickoff) meta.push('Kick-off ' + fx.kickoff);
+    document.getElementById('matchMeta').textContent = meta.join(' \u00b7 ');
+    show('matchHead');
+  }
+
+  /* Build the ballot rows from the worker's player list (XI + subs used). */
+  function renderBallot(players){
+    var wrap = document.getElementById('voteRows');
+    while(wrap.firstChild) wrap.removeChild(wrap.firstChild);
+    players.forEach(function(p){
+      var row = document.createElement('div');
+      row.className = 'vote-row';
+      row.setAttribute('data-player', p.name);
+      var nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = p.name;
+      var pos = document.createElement('span'); pos.className = 'pos'; pos.textContent = p.pos || '';
+      var scores = document.createElement('span'); scores.className = 'scores';
+      for(var v = 1; v <= 10; v++){
+        var b = document.createElement('button');
+        b.type = 'button'; b.setAttribute('data-v', String(v)); b.textContent = String(v);
+        scores.appendChild(b);
+      }
+      var mp = document.createElement('span'); mp.className = 'motm-pick';
+      var mb = document.createElement('button');
+      mb.type = 'button'; mb.className = 'motm-btn'; mb.textContent = 'MotM';
+      mp.appendChild(mb);
+      row.appendChild(nm); row.appendChild(pos); row.appendChild(scores); row.appendChild(mp);
+      wrap.appendChild(row);
+    });
+    bindRows();
+    hide('notice'); hide('results'); show('ballot');
+  }
+
+  function bindRows(){
+    document.querySelectorAll('#voteRows .vote-row').forEach(function(row){
+      row.querySelectorAll('.scores button').forEach(function(b){
+        b.addEventListener('click', function(){
+          row.querySelectorAll('.scores button').forEach(function(x){ x.classList.remove('sel'); });
+          b.classList.add('sel');
+        });
+      });
+      row.querySelector('.motm-btn').addEventListener('click', function(){
+        document.querySelectorAll('.motm-btn').forEach(function(x){ x.classList.remove('sel'); });
+        this.classList.add('sel');
+      });
+    });
+  }
+
   function showResults(){
-    document.getElementById('ballot').style.display = 'none';
-    document.getElementById('results').style.display = 'block';
+    hide('ballot'); hide('notice');
+    show('results');
     window.scrollTo({top:0, behavior:'smooth'});
   }
 
@@ -299,8 +338,6 @@ try{
      If the aggregate can't be fetched, fall back to a plain thank-you (never
      show the sample numbers after a real vote). */
   function renderAggregate(agg, lead){
-    /* lead overrides the default "Thanks — your ballot has been counted."
-       opener (used for the already-voted path). */
     lead = lead || 'Thanks \u2014 your ballot has been counted.';
     var res = document.getElementById('results');
     var thanks = res.querySelector('.thanks');
@@ -337,7 +374,15 @@ try{
     motmEl.appendChild(document.createTextNode(' (' + pct + '% of votes)'));
   }
 
+  function showAggregateView(lead){
+    fetchAggregate().then(function(agg){
+      renderAggregate(agg, lead);
+      showResults();
+    });
+  }
+
   document.getElementById('submitBtn').addEventListener('click', function(){
+    var rows = document.querySelectorAll('#voteRows .vote-row');
     var allRated = Array.prototype.every.call(rows, function(row){
       return row.querySelector('.scores button.sel');
     });
@@ -392,7 +437,9 @@ try{
       btn.disabled = false;
       var err = document.getElementById('err');
       var reason = (e && e.message) || '';
-      if(reason.indexOf('closed') !== -1){
+      if(reason.indexOf('not yet open') !== -1){
+        err.textContent = 'Voting for this match hasn\u2019t opened yet \u2014 it opens at kick-off.';
+      }else if(reason.indexOf('closed') !== -1){
         err.textContent = 'Voting for this match has closed.';
       }else if(reason.indexOf('rate limited') !== -1){
         err.textContent = 'Too many attempts \u2014 please wait a few minutes and try again.';
@@ -405,13 +452,41 @@ try{
     });
   });
 
-  /* On load: if this browser has already voted on this match, skip the ballot
-     and go straight to the live results. */
-  if(RATINGS_ENDPOINT && hasVotedHere()){
-    fetchAggregate().then(function(agg){
-      renderAggregate(agg, 'You\u2019ve already voted on this match.');
-      showResults();
-    });
+  /* Entry point: ask the worker what (if anything) is on. */
+  if(!RATINGS_ENDPOINT){
+    renderBallot(SAMPLE_PLAYERS);   /* demo mode */
+  }else{
+    fetch(RATINGS_ENDPOINT + '/current')
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(cur){
+        if(!cur || !cur.status || cur.status === 'none'){
+          notice('No ballot is open right now',
+            'Player ratings open at kick-off on matchdays \u2014 check back after the next game.');
+          return;
+        }
+        MATCH_ID = cur.match_id || '';
+        VOTED_KEY = MATCH_ID ? 'gasdex-voted-' + MATCH_ID : '';
+        fillMatchHead(cur);
+        if(cur.status === 'upcoming'){
+          notice('Voting opens at kick-off',
+            'Ratings ' + (cur.label ? 'for the match ' + cur.label + ' ' : '') +
+            'open at kick-off time and stay open until 48 hours after full time.');
+          return;
+        }
+        if(cur.status === 'closed'){
+          showAggregateView('Voting has closed for this match.');
+          return;
+        }
+        if(hasVotedHere()){
+          showAggregateView('You\u2019ve already voted on this match.');
+          return;
+        }
+        renderBallot(cur.players || []);
+      })
+      .catch(function(){
+        notice('Ratings are unavailable right now',
+          'We couldn\u2019t reach the ratings service. Please try again in a few minutes.');
+      });
   }
 })();
 

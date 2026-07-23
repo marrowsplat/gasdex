@@ -17,7 +17,7 @@ import json
 import sys
 import html
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import re
 
 # News relevance filter (shared with tools/feeds/fetch_news.py). Applied
@@ -694,6 +694,30 @@ def build_reports(template_path, data_dir, out_dir):
     return written
 
 
+def build_fixtures_json(data_dir, output_path):
+    """Publish the upcoming-fixtures list as out/fixtures.json.
+
+    Consumed by the ratings worker's matchday cron (see
+    backend/ratings-worker/worker.js getSiteFixtures) so ballot windows come
+    from the same curated fixtures the site shows — TheSportsDB + the
+    maintainer's overrides — at zero API cost. Kickoff times are London
+    wall-clock, as everywhere else in the pipeline.
+    """
+    results_data = load_json_data(data_dir / "results.json") or {}
+    fixtures = [
+        f for f in results_data.get("fixtures", [])
+        if f.get("match_id") and f.get("date")
+    ]
+    payload = {
+        "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "timezone": "Europe/London",
+        "fixtures": fixtures,
+    }
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps(payload, indent=1), encoding="utf-8")
+    print(f"✓ Rendered to {output_path} ({len(fixtures)} fixtures for the ballot cron)")
+
+
 def main():
     root = Path(__file__).resolve().parent.parent
     template_path = root / "templates" / "index.template.html"
@@ -733,6 +757,9 @@ def main():
             data_dir,
             root / "out",
         )
+        # Publish the fixtures list (out/fixtures.json) — the ratings worker's
+        # matchday cron reads this to know when to open ballots (free, no API).
+        build_fixtures_json(data_dir, root / "out" / "fixtures.json")
         return 0
     except Exception as e:
         print(f"ERROR: {e}", file=sys.stderr)
