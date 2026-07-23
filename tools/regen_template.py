@@ -14,6 +14,7 @@ patterns = {
     "news": re.compile(r'^\s*<li><span class="ico">&#128240;</span>'),
     "club": re.compile(r'^\s*<li><span class="ico">&#128309;</span>'),
     "youtube": re.compile(r'^\s*<li><span class="ico">&#9654;&#65039;</span>'),
+    "reports": re.compile(r'^\s*<li><span class="ico">&#9997;&#65039;</span>'),
 }
 
 lines = src.split("\n")
@@ -36,7 +37,7 @@ while i < len(lines):
         i += 1
 
 tpl = "\n".join(out)
-assert tpl.count("<!--BLOCK:") == 5, tpl.count("<!--BLOCK:")
+assert tpl.count("<!--BLOCK:") == 6, tpl.count("<!--BLOCK:")
 tpl = tpl.replace("<b>Sun 19 Jul, 08:00</b>", "<b><!--UPDATED--></b>")
 assert "<!--UPDATED-->" in tpl
 

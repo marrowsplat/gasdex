@@ -69,5 +69,12 @@ an approved report is one small JSON file + one push — CI does the rest.
   (site/report-example.html) via templates/report.template.html — any approved
   design change to the reference must be mirrored in the template
   (marker-strip equality is checked the same way as the index template).
-- Wiring published reports into the index "Fan Match Reports" box and the
-  archive-reports page is a follow-up (see ROADMAP).
+- The index "Fan Match Reports" box and the archive page
+  (out/archive-reports.html) are rendered from the SAME data/reports/ files
+  automatically (23 Jul 2026): the box lists the 5 newest reports, the
+  archive groups every report by season. With zero published reports both
+  show a "be the first!" invitation. Nothing extra to do — one JSON file
+  publishes (or un-publishes) everywhere at once.
+- site/archive-reports.html is now the STATIC DESIGN REFERENCE only (same
+  convention as archive-news); the deployed page is rendered by
+  build_site.py from templates/archive-reports.template.html.

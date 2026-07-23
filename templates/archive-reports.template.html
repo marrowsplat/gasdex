@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The full archive of fan-written Bristol Rovers match reports on GasDex.">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/favicon-180.png">
+<title>All Fan Match Reports | GasDex</title>
+<style>
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background-color:#0e0e10;
+    background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 2px,transparent 2px 14px),
+                     repeating-linear-gradient(-45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px);
+    color:#ddd;font-family:Verdana,Geneva,Tahoma,sans-serif;font-size:13px;line-height:1.6;
+  }
+  a{text-decoration:none;transition:color .15s ease, background .15s ease}
+  .mast-mini{max-width:840px;margin:0 auto;padding:16px 22px 12px;display:flex;align-items:center;gap:12px}
+  .crest-mini{height:34px;flex-shrink:0}
+  .crest-mini img{height:34px;width:auto;display:block}
+  .crest-mini .logo-light{display:none}
+  body.bg-light .crest-mini .logo-dark{display:none}
+  body.bg-light .crest-mini .logo-light{display:block}
+  .mast-mini .wordmark{font-size:19px;color:#4db8ff}
+  .mast-mini .wordmark b{color:#fff}
+  .mast-mini a:hover .wordmark, .mast-mini a:hover .wordmark b{color:#ffc400}
+  .mast-mini .home-link{display:flex;align-items:center;gap:12px}
+  .mast-mini .back{margin-left:auto;font-size:11.5px;color:#8a8a90}
+  .mast-mini .back a{color:#4db8ff}
+  .mast-mini .back a:hover{color:#ffc400}
+  .rule-mini{height:3px;border-top:2px solid #0d4f9e;border-bottom:1px solid #ffc400;max-width:840px;margin:0 auto 22px}
+
+  .sheet-wrap{max-width:840px;margin:0 auto;padding:0 22px 40px}
+  .kicker{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+    color:#fff;background:linear-gradient(180deg,#125db8,#0d4f9e);padding:5px 14px;
+    border-radius:8px 8px 0 0;margin-left:12px;box-shadow:0 -2px 4px rgba(0,0,0,.35)}
+  .sheet{background:linear-gradient(180deg,#fdfdfe,#ececee);border:1px solid #b9b9be;border-top:3px solid #0d4f9e;
+    border-radius:12px;box-shadow:0 3px 8px rgba(0,0,0,.6);padding:22px 26px 26px;color:#1a1a1c}
+  .sheet a{color:#0d4f9e;font-weight:600}
+  .sheet a:hover{color:#d6a300}
+  .sheet h1{font-size:21px;color:#1a1a1c;margin:2px 0 12px;line-height:1.3}
+  .sheet h3{font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#0d4f9e;margin:18px 0 10px}
+
+  .season-group{margin-bottom:20px}
+  .season-header{font-size:12px;font-weight:800;color:#0d4f9e;letter-spacing:.5px;margin-bottom:8px;text-transform:uppercase}
+  .report-list{list-style:none}
+  .report-item{padding:8px 0;border-bottom:1px solid #ddd;display:flex;gap:8px;align-items:flex-start}
+  .report-item:last-child{border-bottom:none}
+  .report-item .ico{flex-shrink:0;width:16px;text-align:center;padding-top:1px}
+  .report-item .content{flex:1}
+  .report-item .author{font-size:10px;color:#6c6c72;margin-left:4px}
+
+  footer{text-align:center;color:#77777d;font-size:10.5px;padding:18px}
+
+  /* background themes */
+  body.bg-navy{background-color:#0a1826;
+    background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 2px,transparent 2px 14px),
+                     repeating-linear-gradient(-45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px)}
+  body.bg-flood{background-color:#08131f;
+    background-image:radial-gradient(ellipse 90% 55% at 50% -10%,rgba(23,94,181,.35),transparent 60%),
+                     repeating-linear-gradient(45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px);
+    background-attachment:fixed}
+  body.bg-quarters{background-color:#0b1a2b;
+    background-image:conic-gradient(rgba(255,255,255,.035) 0 90deg,transparent 90deg 180deg,rgba(255,255,255,.035) 180deg 270deg,transparent 270deg 360deg);
+    background-size:340px 340px;background-attachment:fixed}
+  body.bg-fade{background:linear-gradient(180deg,#0d3d75 0,#0a2444 240px,#0a1420 720px,#070c12 100%);background-attachment:fixed}
+  body.bg-slate{background-color:#22242a;
+    background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 14px)}
+  body.bg-light{background-color:#ccd4dd;
+    background-image:repeating-linear-gradient(45deg,rgba(13,79,158,.05) 0 2px,transparent 2px 14px)}
+  body.bg-light .mast-mini .wordmark{color:#0d4f9e}
+  body.bg-light .mast-mini .wordmark b{color:#062845}
+  body.bg-light .mast-mini .back{color:#5c6b80}
+  body.bg-light footer{color:#5c6b80}
+  body.bg-teletext{background-color:#000;
+    background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 2px)}
+  body.bg-teletext .mast-mini .wordmark{color:#ffc400}
+  body.bg-teletext .mast-mini .wordmark b{color:#fff}
+  body.bg-teletext .mast-mini .back{color:#888}
+  body.bg-teletext .rule-mini{border-top-color:#ffc400;border-bottom-color:#0d4f9e}
+  body.bg-teletext .kicker{background:linear-gradient(180deg,#ffc400,#e6b000);color:#000}
+  body.bg-teletext .sheet{background:linear-gradient(180deg,#f5f5f0,#e8e8e0);border-color:#888;border-top-color:#0d4f9e}
+  body.bg-teletext footer{color:#888}
+
+
+  /* ============ MOBILE PASS (internal pages, 22 Jul 2026 sprint) ============
+     All rules below are @media-only — desktop rendering is unchanged. */
+  @media(max-width:640px){
+    .mast-mini{padding:12px 16px 10px;gap:10px}
+    .mast-mini .wordmark{font-size:17px}
+    .mast-mini .back{font-size:10.5px}
+    .rule-mini{margin-bottom:16px}
+    .sheet-wrap{padding:0 12px 32px}
+    .kicker{font-size:11px;padding:4px 11px;margin-left:8px;letter-spacing:.6px;border-radius:6px 6px 0 0}
+    .sheet{padding:16px 14px 18px;border-radius:10px;border-top-width:2px}
+    .sheet h1{font-size:18px}
+    .sheet p{font-size:12.5px}
+    .btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center;padding:8px 16px}
+    footer{font-size:9.5px;padding:12px}
+
+    .report-item{padding:8px 0;gap:6px}
+  }
+</style>
+</head>
+<body>
+
+<div class="mast-mini">
+  <a class="home-link" href="index.html" title="Back to the index">
+    <span class="crest-mini"><img class="logo-dark" src="assets/logo-mark-dark.png" alt=""><img class="logo-light" src="assets/logo-mark-light.png" alt=""></span>
+    <span class="wordmark"><b>Gas</b>Dex</span>
+  </a>
+  <span class="back"><a href="index.html">&larr; Back to the index</a></span>
+</div>
+<div class="rule-mini"></div>
+
+<div class="sheet-wrap">
+  <span class="kicker">Fan Match Reports</span>
+  <div class="sheet">
+
+    <h1>All Fan Match Reports</h1>
+
+    <!--BLOCK:archive-reports-->
+    <!--/BLOCK:archive-reports-->
+
+    <p style="margin-top:20px"><a href="index.html">&larr; Back to the index</a></p>
+
+  </div>
+</div>
+
+<footer>GasDex &middot; unofficial Bristol Rovers aggregator &middot; fan match reports archive</footer>
+
+<script>
+(function(){
+  try{
+    var saved = localStorage.getItem('gasdex-bg');
+    if(saved) document.body.className = saved;
+  }catch(e){}
+})();
+</script>
+<script data-goatcounter="https://gasdex.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

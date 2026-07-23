@@ -28,7 +28,8 @@
   .box ul{list-style:none}
   .box li{padding:3.5px 0;display:flex;gap:7px;align-items:baseline}
   .box li .ico{flex-shrink:0;width:16px;text-align:center}
-  .score-row,.fix-row{display:flex;justify-content:space-between;gap:8px;padding:3.5px 0}
+  .score-row,.fix-row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:0 8px;padding:3.5px 0}
+  .comp{flex-basis:100%;font-size:10px;color:#6c6c72;line-height:1.35}
   .sc{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
   .opp{font-weight:600}
   .rate-row{display:flex;align-items:center;gap:8px;padding:3px 0}
@@ -92,6 +93,10 @@
   .btn{background:#0d4f9e;color:#fff !important;font-size:12px}
   .btn:hover{background:#d6a300}
   .pending{font-size:10.5px;color:#6c6c72;text-align:center;margin-top:6px;font-style:italic}
+  /* Today's Line-up box (hidden off-matchday; filled from the ratings worker) */
+  .box[hidden]{display:none}
+  .lineup-pos{flex-shrink:0;width:26px;font-size:9.5px;font-weight:700;color:#6c6c72;text-transform:uppercase}
+  .lineup-subhead{font-size:10.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:#0d4f9e}
   .strip{background:#ffc400;color:#1a1a1a;text-align:center;padding:9px 14px;font-size:12.5px;font-weight:700;margin-top:26px}
   .strip a{color:#0d4f9e;text-decoration:underline}
   .strip a:hover{color:#c0392b}
@@ -268,7 +273,8 @@
     .see-all-link{font-size:11px}
 
     /* Score / fixture rows */
-    .score-row,.fix-row{gap:4px;padding:2.5px 0;font-size:12px}
+    .score-row,.fix-row{gap:0 4px;padding:2.5px 0;font-size:12px}
+    .comp{font-size:9.5px}
     .opp{font-weight:600;flex-shrink:1;word-break:break-word}
     .sc,.when2{flex-shrink:0;white-space:nowrap}
 
@@ -333,11 +339,11 @@
       <button class="reorder-btn" type="button" title="Move down" aria-label="Move this box down" data-dir="down">&#9660;</button>
     </div>
     <div class="inner">
-    <div class="score-row"><span class="opp">Gillingham (H)</span><span class="sc l">L 0&ndash;1</span></div>
-    <div class="score-row"><span class="opp">Barrow (A)</span><span class="sc w">W 2&ndash;1</span></div>
-    <div class="score-row"><span class="opp">Notts County (H)</span><span class="sc d">D 1&ndash;1</span></div>
-    <div class="score-row"><span class="opp">Tranmere (H)</span><span class="sc w">W 2&ndash;0</span></div>
-    <div class="score-row"><span class="opp">Crewe (A)</span><span class="sc d">D 2&ndash;2</span></div>
+    <div class="score-row"><span class="opp">Gillingham (H)</span><span class="sc l">L 0&ndash;1</span><span class="comp">League Two</span></div>
+    <div class="score-row"><span class="opp">Barrow (A)</span><span class="sc w">W 2&ndash;1</span><span class="comp">League Two</span></div>
+    <div class="score-row"><span class="opp">Notts County (H)</span><span class="sc d">D 1&ndash;1</span><span class="comp">League Two</span></div>
+    <div class="score-row"><span class="opp">Tranmere (H)</span><span class="sc w">W 2&ndash;0</span><span class="comp">League Two</span></div>
+    <div class="score-row"><span class="opp">Crewe (A)</span><span class="sc d">D 2&ndash;2</span><span class="comp">League Two</span></div>
     </div>
   </div>
 
@@ -348,10 +354,22 @@
       <button class="reorder-btn" type="button" title="Move down" aria-label="Move this box down" data-dir="down">&#9660;</button>
     </div>
     <div class="inner">
-    <div class="fix-row"><span class="opp">Grimsby (H)</span><span class="when2">Sat 25 Jul, 15:00</span></div>
-    <div class="fix-row"><span class="opp">Salford (A)</span><span class="when2">Tue 28 Jul, 19:45</span></div>
-    <div class="fix-row"><span class="opp">Colchester (H)</span><span class="when2">Sat 1 Aug, 15:00</span></div>
-    <div class="fix-row"><span class="opp">Newport (A)</span><span class="when2">Sat 8 Aug, 15:00</span></div>
+    <div class="fix-row"><span class="opp">Grimsby (H)</span><span class="when2">Sat 25 Jul, 15:00</span><span class="comp">League Two</span></div>
+    <div class="fix-row"><span class="opp">Salford (A)</span><span class="when2">Tue 28 Jul, 19:45</span><span class="comp">League Two</span></div>
+    <div class="fix-row"><span class="opp">Colchester (H)</span><span class="when2">Sat 1 Aug, 15:00</span><span class="comp">League Two</span></div>
+    <div class="fix-row"><span class="opp">Newport (A)</span><span class="when2">Sat 8 Aug, 15:00</span><span class="comp">League Two</span></div>
+    </div>
+  </div>
+
+  <div class="box" data-box-id="lineup" id="lineupBox" hidden>
+    <h2>Today's Line-up</h2>
+    <div class="box-controls">
+      <button class="reorder-btn" type="button" title="Move up" aria-label="Move this box up" data-dir="up">&#9650;</button>
+      <button class="reorder-btn" type="button" title="Move down" aria-label="Move this box down" data-dir="down">&#9660;</button>
+    </div>
+    <div class="inner">
+    <div class="rate-note" id="lineupNote">Line-ups appear here on matchdays.</div>
+    <ul id="lineupList"></ul>
     </div>
   </div>
 
@@ -410,9 +428,7 @@
     </div>
     <div class="inner">
     <ul>
-      <li><span class="ico">&#9997;&#65039;</span><div><a href="report-example.html">&quot;Robbed at the Mem&quot; &mdash; Gillingham (H)</a><span class="when">by GasHead72</span></div></li>
-      <li><span class="ico">&#9997;&#65039;</span><div><a href="report-example.html">&quot;Gritty at Holker Street&quot; &mdash; Barrow (A)</a><span class="when">by BlueSince84</span></div></li>
-      <li><span class="ico">&#9997;&#65039;</span><div><a href="report-example.html">&quot;Two points dropped&quot; &mdash; Notts Co (H)</a><span class="when">by PiratePete</span></div></li>
+      <li><span class="ico">&#9997;&#65039;</span><div>No fan reports published yet &mdash; be the first!</div></li>
     </ul>
     <a class="btn" href="submit.html">Submit your report &rarr;</a>
     <div class="pending">Reports are reviewed before publishing.</div>
@@ -626,9 +642,59 @@
   var note = document.getElementById('rateNote');
   var status = document.getElementById('rateStatus');
   if(!note || !status || !RATINGS_ENDPOINT) return;
+
+  function londonToday(){
+    /* Fixture dates are London wall-clock; compare against London "today". */
+    try{
+      return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London' }).format(new Date());
+    }catch(e){
+      return new Date().toISOString().slice(0, 10);
+    }
+  }
+
+  function renderLineup(cur){
+    /* Today's Line-up box: hidden off-matchday by design. It appears only
+       when the worker has the CONFIRMED XI (source 'lineups', not the
+       full-squad fallback) for a fixture dated today. Players 12+ are the
+       subs the cron appends after full time. */
+    var box = document.getElementById('lineupBox');
+    var list = document.getElementById('lineupList');
+    var lnote = document.getElementById('lineupNote');
+    if(!box || !list || !lnote) return;
+    if(!cur || cur.source !== 'lineups' || !cur.players || !cur.players.length) return;
+    if(!cur.fixture || cur.fixture.date !== londonToday()) return;
+    lnote.textContent = '';
+    if(cur.label) lnote.appendChild(document.createTextNode(cur.label + ' \u00b7 '));
+    var lb = document.createElement('b');
+    lb.textContent = 'confirmed starting XI';
+    lnote.appendChild(lb);
+    list.textContent = '';
+    cur.players.forEach(function(p, i){
+      if(i === 11){
+        var divider = document.createElement('li');
+        var dh = document.createElement('span');
+        dh.className = 'lineup-subhead';
+        dh.textContent = 'Subs used';
+        divider.appendChild(dh);
+        list.appendChild(divider);
+      }
+      var li = document.createElement('li');
+      var pos = document.createElement('span');
+      pos.className = 'lineup-pos';
+      pos.textContent = p.pos || '';
+      var nm = document.createElement('span');
+      nm.textContent = p.name;
+      li.appendChild(pos);
+      li.appendChild(nm);
+      list.appendChild(li);
+    });
+    box.hidden = false;
+  }
+
   fetch(RATINGS_ENDPOINT + '/current')
     .then(function(r){ return r.ok ? r.json() : null; })
     .then(function(cur){
+      if(cur) renderLineup(cur);
       if(!cur || !cur.match_id || cur.status === 'none') return null;
       return fetch(RATINGS_ENDPOINT + '/aggregate?match_id=' + encodeURIComponent(cur.match_id))
         .then(function(r){ return r.ok ? r.json() : null; })

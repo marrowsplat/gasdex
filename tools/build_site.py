@@ -417,8 +417,11 @@ def render_results(results):
         # Outcome class: w, d, or l
         outcome_class = outcome.lower() if outcome in "WDL" else "d"
 
+        comp = html.escape(result.get("competition", ""))
+        comp_span = f'<span class="comp">{comp}</span>' if comp else ""
+
         html_rows.append(
-            f'    <div class="score-row"><span class="opp">{opp}{venue_str}</span><span class="sc {outcome_class}">{outcome} {score_str}</span></div>'
+            f'    <div class="score-row"><span class="opp">{opp}{venue_str}</span><span class="sc {outcome_class}">{outcome} {score_str}</span>{comp_span}</div>'
         )
     return "\n".join(html_rows)
 
@@ -454,8 +457,11 @@ def render_fixtures(fixtures):
 
         datetime_str = f"{date_display}, {kickoff}"
 
+        comp = html.escape(fixture.get("competition", ""))
+        comp_span = f'<span class="comp">{comp}</span>' if comp else ""
+
         html_rows.append(
-            f'    <div class="fix-row"><span class="opp">{opp}{venue_str}</span><span class="when2">{datetime_str}</span></div>'
+            f'    <div class="fix-row"><span class="opp">{opp}{venue_str}</span><span class="when2">{datetime_str}</span>{comp_span}</div>'
         )
     return "\n".join(html_rows)
 
@@ -512,6 +518,7 @@ def build_site(template_path, data_dir, output_path):
     youtube_html = render_youtube_items(youtube_data.get("items", []))
     results_html = render_results(results_data.get("results", []))
     fixtures_html = render_fixtures(results_data.get("fixtures", []))
+    reports_html = render_report_items(load_published_reports(data_dir))
     updated_time = format_updated_timestamp()
 
     # Replace blocks in template
@@ -546,6 +553,12 @@ def build_site(template_path, data_dir, output_path):
         output,
         flags=re.DOTALL
     )
+    output = re.sub(
+        r'<!--BLOCK:reports-->.*?<!--/BLOCK:reports-->',
+        lambda m: f'<!--BLOCK:reports-->\n{reports_html}\n    <!--/BLOCK:reports-->',
+        output,
+        flags=re.DOTALL
+    )
     output = output.replace('<!--UPDATED-->', updated_time)
 
     # Write output
@@ -563,6 +576,158 @@ def build_site(template_path, data_dir, output_path):
         print(f"  All feeds loaded live")
     print(f"  Last updated: {updated_time}")
 
+    return output_path
+
+
+def load_published_reports(data_dir):
+    """Read approved fan reports (data/reports/*.json, "_"-prefixed skipped).
+
+    Returns a list of dicts (newest submission first) used by the index box
+    and the archive page. The per-report pages themselves are rendered by
+    build_reports() from the same files — deleting a JSON un-publishes the
+    report everywhere in one go.
+    """
+    reports_dir = Path(data_dir) / "reports"
+    items = []
+    if not reports_dir.exists():
+        return items
+    for jf in sorted(reports_dir.glob("*.json")):
+        if jf.name.startswith("_"):
+            continue
+        try:
+            with open(jf, 'r', encoding='utf-8') as f:
+                r = json.load(f)
+        except Exception:
+            continue
+        slug = re.sub(r"[^a-z0-9-]", "", str(r.get("match_id") or jf.stem).lower())
+        if not slug:
+            continue
+        home = str(r.get("match_team_home", "Bristol Rovers"))
+        away = str(r.get("match_team_away", "Opponent"))
+        if "Bristol Rovers" in home:
+            opponent, venue = away, "H"
+        else:
+            opponent, venue = home, "A"
+        # Season from the yyyymmdd tail of the match_id slug (fallback:
+        # submission date). English seasons roll over in the summer: month
+        # >= 7 belongs to the season that STARTS that year.
+        year = month = None
+        m = re.search(r"(\d{4})(\d{2})\d{2}$", slug)
+        if m:
+            year, month = int(m.group(1)), int(m.group(2))
+        else:
+            try:
+                dt = datetime.fromisoformat(str(r.get("date_submitted", "")).replace('Z', '+00:00'))
+                year, month = dt.year, dt.month
+            except Exception:
+                pass
+        if year:
+            start = year if month >= 7 else year - 1
+            season = f"{start}\u2013{str(start + 1)[2:]}"
+        else:
+            season = "Season unknown"
+        items.append({
+            "slug": slug,
+            "title": str(r.get("title", "Untitled report")),
+            "author": str(r.get("author", "Anonymous")),
+            "opponent": opponent,
+            "venue": venue,
+            "season": season,
+            "date_submitted": str(r.get("date_submitted", "")),
+        })
+    items.sort(key=lambda i: i["date_submitted"], reverse=True)
+    return items
+
+
+# The index box's zero-reports state (also the static markup in
+# site/index.html — keep the two in lockstep).
+REPORTS_EMPTY_LI = ('      <li><span class="ico">&#9997;&#65039;</span>'
+                    '<div>No fan reports published yet &mdash; be the first!</div></li>')
+
+
+def render_report_items(items, cap=5):
+    """Render the index Fan Match Reports list (or its empty state)."""
+    if not items:
+        return REPORTS_EMPTY_LI
+    rows = []
+    for it in items[:cap]:
+        title = html.escape(it["title"])
+        author = html.escape(it["author"])
+        opp = html.escape(it["opponent"])
+        rows.append(
+            f'      <li><span class="ico">&#9997;&#65039;</span><div>'
+            f'<a href="report-{it["slug"]}.html">&quot;{title}&quot; &mdash; {opp} ({it["venue"]})</a>'
+            f'<span class="when">by {author}</span></div></li>'
+        )
+    return "\n".join(rows)
+
+
+def build_archive_reports(template_path, output_path, items):
+    """Render out/archive-reports.html from its template + published reports.
+
+    Reports are grouped by season, newest season first. With zero reports the
+    page shows the same be-the-first invitation as the index box.
+    """
+    if not template_path.exists():
+        print(f"  NOTE: archive-reports template missing ({template_path}); skipped")
+        return None
+
+    with open(template_path, 'r', encoding='utf-8') as f:
+        template = f.read()
+
+    if not items:
+        archive_html = (
+            '    <p>No fan reports published yet &mdash; '
+            '<a href="submit.html">be the first!</a></p>\n'
+            '    <p style="margin-top:10px;font-size:11.5px;color:#6c6c72">'
+            'Reports from fellow Gasheads appear here once they&rsquo;ve been reviewed.</p>'
+        )
+    else:
+        seasons = {}
+        order = []
+        for it in items:
+            if it["season"] not in seasons:
+                seasons[it["season"]] = []
+                order.append(it["season"])
+            seasons[it["season"]].append(it)
+        order.sort(reverse=True)
+        groups = []
+        for season in order:
+            lis = []
+            for it in seasons[season]:
+                title = html.escape(it["title"])
+                author = html.escape(it["author"])
+                opp = html.escape(it["opponent"])
+                lis.append(
+                    '        <li class="report-item">\n'
+                    '          <span class="ico">&#9997;&#65039;</span>\n'
+                    '          <div class="content">\n'
+                    f'            <a href="report-{it["slug"]}.html">&quot;{title}&quot; &mdash; {opp} ({it["venue"]})</a>\n'
+                    f'            <span class="author">by {author}</span>\n'
+                    '          </div>\n'
+                    '        </li>'
+                )
+            groups.append(
+                '    <div class="season-group">\n'
+                f'      <div class="season-header">{html.escape(season)}</div>\n'
+                '      <ul class="report-list">\n'
+                + "\n".join(lis) + "\n"
+                '      </ul>\n'
+                '    </div>'
+            )
+        archive_html = "\n\n".join(groups)
+
+    output = re.sub(
+        r'<!--BLOCK:archive-reports-->.*?<!--/BLOCK:archive-reports-->',
+        lambda m: f'<!--BLOCK:archive-reports-->\n{archive_html}\n    <!--/BLOCK:archive-reports-->',
+        template,
+        flags=re.DOTALL
+    )
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(output)
+    print(f"✓ Rendered to {output_path} ({len(items)} published report(s))")
     return output_path
 
 
@@ -756,6 +921,13 @@ def main():
             root / "templates" / "report.template.html",
             data_dir,
             root / "out",
+        )
+        # Fan reports archive page, rendered from the same data/reports/
+        # files (the index box is rendered inside build_site above).
+        build_archive_reports(
+            root / "templates" / "archive-reports.template.html",
+            root / "out" / "archive-reports.html",
+            load_published_reports(data_dir),
         )
         # Publish the fixtures list (out/fixtures.json) — the ratings worker's
         # matchday cron reads this to know when to open ballots (free, no API).

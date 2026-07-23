@@ -77,8 +77,8 @@ jobs:
           cp site/rate.html out/
           cp site/submit.html out/
           cp site/about.html out/
-          # archive-news.html is RENDERED by build_site.py (do not copy the static sample over it)
-          cp site/archive-reports.html out/
+          # archive-news.html and archive-reports.html are RENDERED by
+          # build_site.py (do not copy the static samples over them)
           cp site/404.html out/
           cp site/contact.html out/
           mkdir -p out/assets
