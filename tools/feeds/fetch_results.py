@@ -521,6 +521,9 @@ def main():
         "results_source": audit["results_source"],
         "results": results_out,
         "fixtures": [f.to_dict() for f in fixtures[:FIXTURES_KEEP]],
+        # Full upcoming list (uncapped) for the season archive page
+        # (out/archive-season.html) — same source + overrides as above.
+        "fixtures_all": [f.to_dict() for f in fixtures],
     }
     with open(output_file, "w") as f:
         json.dump(output, f, indent=2)

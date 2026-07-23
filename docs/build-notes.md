@@ -85,9 +85,19 @@ Same structure as `news.json` (title, url, source, published).
       "venue": "H|A",
       "competition": "League Two"
     }
-  ]
+  ],
+  "fixtures_all": [ "... same shape, UNCAPPED (all upcoming fixtures) ..." ]
 }
 ```
+
+`fixtures` stays capped at 5 (the index box + out/fixtures.json for the ballot
+cron). `fixtures_all` (added session 12) is the full upcoming list consumed by
+`build_archive_season()` for out/archive-season.html — the full-season page
+(played matches from data/results-history.json + all upcoming fixtures,
+grouped season → month, rows in the index's Option D markup). The static
+design reference is site/archive-season.html; the template is
+templates/archive-season.template.html (`<!--BLOCK:archive-season-->`). Both
+index boxes link to it via "See full season →" card footers.
 
 ## Fallback data
 

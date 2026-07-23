@@ -740,6 +740,146 @@ def build_archive_reports(template_path, output_path, items):
     return output_path
 
 
+def _parse_match_date(date_str):
+    """Parse a fixture/result date ('2026-08-08' or '25 Jul') -> datetime or None.
+
+    Sample-format dates ('25 Jul') get the render_fixtures assumption of 2026
+    so the fallback data still groups sensibly.
+    """
+    try:
+        return datetime.fromisoformat(date_str)
+    except Exception:
+        pass
+    try:
+        return datetime.strptime(f"{date_str} 2026", "%d %b %Y")
+    except Exception:
+        return None
+
+
+def _season_label(dt):
+    """English season label for a match date: month >= 7 starts that year."""
+    start = dt.year if dt.month >= 7 else dt.year - 1
+    return f"{start}\u2013{str(start + 1)[2:]}"
+
+
+def build_archive_season(template_path, data_dir, output_path):
+    """Render out/archive-season.html — the full-season results + fixtures page.
+
+    One combined chronological page (Scott's pick, session 12): played matches
+    from the rolling data/results-history.json cache, upcoming matches from
+    results.json's uncapped fixtures_all list (same TheSportsDB + overrides
+    engine as the index). Grouped by season (newest first), then month
+    (ascending), matching the club's own fixture-list rhythm. Row markup is
+    the index's Option D layout: opponent + score/kickoff on line 1, one grey
+    .comp meta line underneath.
+    """
+    if not template_path.exists():
+        print(f"  NOTE: archive-season template missing ({template_path}); skipped")
+        return None
+
+    with open(template_path, 'r', encoding='utf-8') as f:
+        template = f.read()
+
+    history = load_json_data(Path(data_dir) / "results-history.json") or {}
+    results = list(history.get("results", {}).values())
+    results_data = load_json_data(Path(data_dir) / "results.json") or {}
+    fixtures = results_data.get("fixtures_all") or results_data.get("fixtures", [])
+
+    played = set()
+    entries = []
+    for r in results:
+        dt = _parse_match_date(r.get("date", ""))
+        if not dt:
+            continue
+        played.add((r.get("date", ""), r.get("opponent", "")))
+        entries.append((dt, "result", r))
+    for f in fixtures:
+        # A match played today can briefly be in both lists — the result wins.
+        if (f.get("date", ""), f.get("opponent", "")) in played:
+            continue
+        dt = _parse_match_date(f.get("date", ""))
+        if not dt:
+            continue
+        entries.append((dt, "fixture", f))
+    entries.sort(key=lambda e: e[0])
+
+    if not entries:
+        archive_html = ('    <p>The season list will appear here once fixtures '
+                        'are announced.</p>')
+        count = 0
+    else:
+        # season label -> month key -> rows (seasons newest first, months ascending)
+        seasons = {}
+        for dt, kind, item in entries:
+            season = _season_label(dt)
+            month_key = (dt.year, dt.month)
+            seasons.setdefault(season, {}).setdefault(month_key, []).append((dt, kind, item))
+
+        groups = []
+        for season in sorted(seasons, reverse=True):
+            month_blocks = []
+            for month_key in sorted(seasons[season]):
+                rows = []
+                for dt, kind, item in seasons[season][month_key]:
+                    opp = html.escape(item.get("opponent", ""))
+                    venue_str = " (H)" if item.get("venue", "") == "H" else " (A)"
+                    date_display = dt.strftime("%a %d %b")
+                    comp = html.escape(item.get("competition", ""))
+                    if kind == "result":
+                        outcome = item.get("outcome", "")
+                        outcome_class = outcome.lower() if outcome in "WDL" else "d"
+                        score_str = f'{item.get("score_for", 0)}&ndash;{item.get("score_against", 0)}'
+                        meta_bits = [date_display, comp]
+                        meta_str = " &middot; ".join(b for b in meta_bits if b)
+                        rows.append(
+                            f'        <div class="score-row"><span class="opp">{opp}{venue_str}</span>'
+                            f'<span class="sc {outcome_class}">{outcome} {score_str}</span>'
+                            f'<span class="comp">{meta_str}</span></div>'
+                        )
+                    else:
+                        kickoff = html.escape(item.get("kickoff", ""))
+                        meta_bits = [date_display]
+                        if item.get("tbc") or (kickoff and kickoff.lower() == "tbc"):
+                            meta_bits.append("time TBC")
+                        elif kickoff:
+                            meta_bits.append(f"<b>{kickoff}</b>")
+                        if comp:
+                            meta_bits.append(comp)
+                        meta_str = " &middot; ".join(b for b in meta_bits if b)
+                        rows.append(
+                            f'        <div class="fix-row"><span class="opp">{opp}{venue_str}</span>'
+                            f'<span class="comp">{meta_str}</span></div>'
+                        )
+                month_label = seasons[season][month_key][0][0].strftime("%B %Y")
+                month_blocks.append(
+                    '      <div class="month-group">\n'
+                    f'        <div class="month-header">{month_label}</div>\n'
+                    + "\n".join(rows) + "\n"
+                    '      </div>'
+                )
+            groups.append(
+                '    <div class="season-group">\n'
+                f'      <div class="season-header">{html.escape(season)}</div>\n\n'
+                + "\n\n".join(month_blocks) + "\n\n"
+                '    </div>'
+            )
+        archive_html = "\n\n".join(groups)
+        count = len(entries)
+
+    output = re.sub(
+        r'<!--BLOCK:archive-season-->.*?<!--/BLOCK:archive-season-->',
+        lambda m: f'<!--BLOCK:archive-season-->\n{archive_html}\n    <!--/BLOCK:archive-season-->',
+        template,
+        flags=re.DOTALL
+    )
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(output)
+    print(f"✓ Rendered to {output_path} ({count} matches on the season page)")
+    return output_path
+
+
 def _report_block(template, block, content):
     """Replace one <!--BLOCK:x-->...<!--/BLOCK:x--> region (markers kept)."""
     return re.sub(
@@ -937,6 +1077,13 @@ def main():
             root / "templates" / "archive-reports.template.html",
             root / "out" / "archive-reports.html",
             load_published_reports(data_dir),
+        )
+        # Full-season results + fixtures page (linked from both index boxes'
+        # "See full season" footers).
+        build_archive_season(
+            root / "templates" / "archive-season.template.html",
+            data_dir,
+            root / "out" / "archive-season.html",
         )
         # Publish the fixtures list (out/fixtures.json) — the ratings worker's
         # matchday cron reads this to know when to open ballots (free, no API).
