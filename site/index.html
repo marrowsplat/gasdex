@@ -396,7 +396,7 @@
       <button class="reorder-btn" type="button" title="Move down" aria-label="Move this box down" data-dir="down">&#9660;</button>
     </div>
     <div class="inner">
-    <div class="rate-note" id="rateNote">vs Gillingham (H) &middot; <b>voting open</b></div>
+    <div class="rate-note" id="rateNote">Ratings open at kick-off on matchdays.</div>
     <div class="motm" id="rateStatus">Averages will appear here once ballots are in.</div>
     <a class="btn" href="rate.html">Rate the players &rarr;</a>
     </div>
@@ -638,6 +638,15 @@
       if(!res) return;
       var cur = res.cur, agg = res.agg;
       var label = cur.label || '';
+      if(cur.status === 'upcoming'){
+        /* Ballot exists but kick-off hasn't happened yet. */
+        note.textContent = '';
+        if(label) note.appendChild(document.createTextNode(label + ' \u00b7 '));
+        var ub = document.createElement('b');
+        ub.textContent = 'voting opens at kick-off';
+        note.appendChild(ub);
+        return;
+      }
       if(cur.status === 'open' && (!agg || !agg.count)){
         /* Ballot is open but no votes yet — invite fans in. */
         note.textContent = '';
