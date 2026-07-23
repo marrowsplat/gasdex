@@ -29,16 +29,20 @@ out/
 # 2. They're point-in-time snapshots with no history value
 # 3. They would cause constant merge conflicts in CI
 # 4. Size: unnecessary repository bloat
-# EXCEPTION: data/results-history.json AND data/news-history.json MUST be
-# committed (rolling caches — never delete)
 data/news.json
 data/club.json
 data/youtube.json
 data/results.json
-# NOTE (session 8b): data/fixtures-audit.json IS committed (CI cache-commit step —
-# the daily digest reads it to flag source failures), and
-# data/fixtures-overrides.json IS committed (maintainer-curated fixture
-# corrections — hand-edited, must persist).
+# ROLLING CACHES live on the dedicated `data-cache` branch (written ONLY by
+# CI — see build.yml). They are ignored on main so the maintainer's pushes
+# can never conflict with the hourly cache bot-commits (session 13 fix).
+# Local copies stay in data/ for local builds/QA; the CI copies on
+# data-cache are canonical. NEVER delete the data-cache branch.
+data/results-history.json
+data/news-history.json
+data/fixtures-audit.json
+# NOTE: data/fixtures-overrides.json IS committed on main (maintainer-curated
+# fixture corrections — hand-edited, must persist).
 # data/fixtures-official-reference.json is LOCAL-ONLY (QA reference capture).
 data/fixtures-official-reference.json
 

@@ -30,13 +30,30 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Full history needed for results cache
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+
+      - name: Restore rolling caches from data-cache branch
+        # The rolling caches (results-history, news-history, fixtures-audit)
+        # live on the dedicated `data-cache` branch, NOT on main. Only this
+        # workflow ever writes to that branch, so the maintainer's pushes to
+        # main can never conflict with cache updates. Do NOT move the caches
+        # back onto main — that reintroduces the rebase-conflict problem.
+        run: |
+          mkdir -p data
+          # Explicit refspec: the Actions checkout is single-branch, so a
+          # plain `git fetch origin data-cache` would NOT create the
+          # origin/data-cache tracking ref.
+          if git fetch origin data-cache:refs/remotes/origin/data-cache; then
+            git checkout origin/data-cache -- data/ || true
+            git reset -q -- data/ || true  # unstage; caches are gitignored on main
+            echo "Restored caches from data-cache branch"
+          else
+            echo "WARNING: data-cache branch not found — starting caches fresh"
+          fi
 
       - name: Fetch News
         id: news
@@ -89,21 +106,32 @@ jobs:
         run: |
           python3 tools/validate.py out/*.html
 
-      - name: Commit results cache
-        # Only commit if there were changes (cache update)
+      - name: Commit rolling caches to data-cache branch
+        # Caches are committed to the dedicated data-cache branch so main
+        # only ever moves when the maintainer pushes (no more rebase
+        # conflicts on his machine). Uses a temporary worktree so the main
+        # checkout used for the Pages deploy is never disturbed.
         if: always()
         run: |
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          git add data/results-history.json
-          git add data/news-history.json || true  # may not exist until first live build
-          git add data/fixtures-audit.json || true  # fixtures cross-check audit (read by the daily Slack digest)
-          git diff --cached --quiet || git commit -m "chore: update rolling caches [skip ci]"
-
-      - name: Push changes
-        if: always()
-        run: |
-          git push origin main || true
+          if git fetch origin data-cache:refs/remotes/origin/data-cache; then
+            git worktree add -B data-cache cache-wt origin/data-cache
+          else
+            # First run ever: create the branch as an orphan (no main history)
+            git worktree add --detach cache-wt
+            git -C cache-wt checkout --orphan data-cache
+            git -C cache-wt rm -rfq --cached . || true
+            find cache-wt -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          fi
+          mkdir -p cache-wt/data
+          for f in results-history.json news-history.json fixtures-audit.json; do
+            if [ -f "data/$f" ]; then cp "data/$f" "cache-wt/data/$f"; fi
+          done
+          git -C cache-wt add -A data
+          git -C cache-wt diff --cached --quiet || git -C cache-wt commit -m "chore: update rolling caches"
+          git -C cache-wt push origin data-cache || true
+          git worktree remove --force cache-wt || true
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

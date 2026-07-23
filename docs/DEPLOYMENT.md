@@ -142,18 +142,21 @@ Then add secrets to GitHub:
 
 ### Rebuild history cache issue
 
-The `data/results-history.json` file accumulates results across builds, and
-`data/news-history.json` does the same for news headlines (it feeds the
-rendered `out/archive-news.html` archive page). If accidentally deleted:
+The rolling caches (`data/results-history.json`, `data/news-history.json`,
+`data/fixtures-audit.json`) accumulate across builds. Since the session-13
+git fix they live on the dedicated **`data-cache` branch** (written ONLY by
+CI — never by hand, never on main; they are gitignored on main so the
+maintainer's pushes can never conflict with the hourly bot commits).
 
-1. Restore from git history:
-   ```bash
-   git checkout HEAD~1 -- data/results-history.json
-   git add data/results-history.json
-   git commit -m "Restore results cache"
-   git push
-   ```
-2. Next build will repopulate with live results
+- The canonical copies: `https://github.com/marrowsplat/gasdex/tree/data-cache/data`
+- If a cache is ever corrupted, restore it from that branch's history:
+  ```bash
+  git fetch origin data-cache:refs/remotes/origin/data-cache
+  git checkout origin/data-cache~1 -- data/results-history.json
+  ```
+  then commit the fixed file back to the data-cache branch (a job for
+  Claude, not the maintainer).
+- NEVER delete the data-cache branch — it holds irreplaceable history.
 
 ### Change rebuild frequency
 
@@ -231,8 +234,10 @@ The workflow has a 2-minute timeout per fetcher (4 feeds × 2 min = ~8 min total
 
 If results haven't populated after the first build:
 1. This is expected if TheSportsDB returns no matches (e.g., off-season)
-2. After a few match weeks, `data/results-history.json` accumulates and the display fills in
-3. To seed with manual data: Edit `data/results-history.json` directly and commit
+2. After a few match weeks, `data/results-history.json` accumulates (on the
+   `data-cache` branch) and the display fills in
+3. To seed with manual data: edit `data/results-history.json` on the
+   `data-cache` branch and commit there (a job for Claude, not the maintainer)
 
 ### CNAME file disappeared
 
@@ -246,7 +251,7 @@ If custom domain is broken after a push:
 ## Security notes
 
 - **No API keys in code**: TheSportsDB needs no key; API-Football key is stored as a GitHub secret, not in the repo
-- **Bot commit to main**: The workflow commits the updated `data/results-history.json` with `[skip ci]` tag to prevent infinite loops
+- **Bot commits go to the `data-cache` branch, never main** (session-13 fix): the workflow commits the rolling caches there, so it can't trigger itself (the push trigger only watches main) and can't conflict with the maintainer's pushes
 - **GitHub Actions permissions**: Workflow file limits permissions to `contents: write` (commit), `pages: write`, and `id-token: write` (deploy)
 
 ---

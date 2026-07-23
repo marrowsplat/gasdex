@@ -47,15 +47,15 @@ an approved report is one small JSON file + one push — CI does the rest.
 
    ```
    cd <project folder>
-   git pull --rebase
    git add data/reports/<match_id>.json
    git commit -m "Publish fan report: <match_id>"
-   git push
+   ./tools/push.sh
    ```
 
-   If the rebase stops on a rolling-cache conflict (news-history/results-history/
-   fixtures-audit): `git checkout --ours <file>` then `git add <file>` then
-   `git rebase --continue` (if vim opens: press Esc, type `:wq`, press Enter).
+   `tools/push.sh` is the ONLY push command (since the session-13 git fix):
+   it self-heals known problems and never opens vim or asks for conflict
+   resolution. The old rebase-conflict dance is gone — the rolling caches
+   now live on the CI-only `data-cache` branch, so main never conflicts.
 
 5. The next scheduled CI run (hourly) builds and deploys the page. To publish
    immediately, run the workflow manually from the repo's Actions tab.
