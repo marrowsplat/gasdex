@@ -401,6 +401,28 @@ def render_youtube_items(items):
     return "\n".join(html_items)
 
 
+def format_match_date(date_str):
+    """Format a match date ("2026-07-18" or "18 Jul") as "Sat 18 Jul".
+
+    Returns the input unchanged if it can't be parsed. Shared by the
+    results and fixtures renderers so both meta lines match the
+    archive-season page ("Sat 18 Jul · Friendly").
+    """
+    if not date_str:
+        return ""
+    try:
+        if any(month in date_str for month in ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']):
+            # Format: "25 Jul" - add current year for parsing
+            parsed = datetime.strptime(f"{date_str} {datetime.now().year}", "%d %b %Y")
+        else:
+            # Assume ISO format "2026-07-25"
+            parsed = datetime.fromisoformat(date_str)
+        return parsed.strftime("%a %d %b")
+    except Exception:
+        # If parsing fails, use as-is
+        return date_str
+
+
 def render_results(results):
     """Render latest results score rows."""
     html_rows = []
@@ -417,8 +439,13 @@ def render_results(results):
         # Outcome class: w, d, or l
         outcome_class = outcome.lower() if outcome in "WDL" else "d"
 
+        # Meta line matches the archive-season page: "Sat 18 Jul · Friendly"
+        # (session 14: date added — the index box previously showed only the
+        # competition, unlike the archive rows).
         comp = html.escape(result.get("competition", ""))
-        comp_span = f'<span class="comp">{comp}</span>' if comp else ""
+        date_display = html.escape(format_match_date(str(result.get("date", ""))))
+        meta_str = " &middot; ".join(b for b in [date_display, comp] if b)
+        comp_span = f'<span class="comp">{meta_str}</span>' if meta_str else ""
 
         html_rows.append(
             f'    <div class="score-row"><span class="opp">{opp}{venue_str}</span><span class="sc {outcome_class}">{outcome} {score_str}</span>{comp_span}</div>'
@@ -437,23 +464,8 @@ def render_fixtures(fixtures):
 
         venue_str = " (H)" if venue == "H" else " (A)"
 
-        # Try to infer day of week from date string if not provided
-        # Handle both "25 Jul" and "2026-07-25" formats
-        date_display = date_str
-        try:
-            # Try parsing as "DD Mon" or "D Mon" format
-            from datetime import datetime
-            if any(month in date_str for month in ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']):
-                # Format: "25 Jul" - add current year for parsing
-                parsed = datetime.strptime(f"{date_str} 2026", "%d %b %Y")
-                date_display = parsed.strftime("%a %d %b")
-            else:
-                # Assume ISO format "2026-07-25"
-                parsed = datetime.fromisoformat(date_str)
-                date_display = parsed.strftime("%a %d %b")
-        except Exception:
-            # If parsing fails, use as-is
-            pass
+        # Handle both "25 Jul" and "2026-07-25" formats (shared helper)
+        date_display = format_match_date(date_str)
 
         comp = html.escape(fixture.get("competition", ""))
 
@@ -475,18 +487,53 @@ def render_fixtures(fixtures):
     return "\n".join(html_rows)
 
 
-def format_updated_timestamp():
-    """Format the current timestamp as 'Dow DD Mon, HH:MM' in Europe/London time."""
-    import os
-    # Try to set timezone to Europe/London
-    try:
-        os.environ['TZ'] = 'Europe/London'
-    except:
-        pass
+def newest_content_timestamp(*feed_dicts):
+    """Return the newest item `published` datetime (tz-aware UTC) across feeds.
 
-    now = datetime.now()
+    Session 14: the masthead "Last updated" line shows CONTENT freshness —
+    the time the most recent item landed in any section — not the build
+    time (builds run hourly whether or not anything changed). Feeds without
+    parseable timestamps are skipped; returns None if nothing parses.
+    """
+    newest = None
+    for d in feed_dicts:
+        if not d:
+            continue
+        for item in d.get("items", []):
+            pub = str(item.get("published", "")).strip()
+            if not pub:
+                continue
+            try:
+                dt = datetime.fromisoformat(pub.replace('Z', '+00:00'))
+            except ValueError:
+                continue
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            if newest is None or dt > newest:
+                newest = dt
+    return newest
+
+
+def format_updated_timestamp(latest_content_dt=None):
+    """Format 'Dow DD Mon, HH:MM' in Europe/London time.
+
+    Shows latest_content_dt (newest item across all sections) when given;
+    falls back to the build time. Future-dated feed items are clamped to
+    now so a bad upstream timestamp can't show a time from the future.
+    NOTE: the old implementation set os.environ['TZ'] without tzset(),
+    which had no effect — CI (UTC) rendered UTC times. zoneinfo is correct
+    everywhere, including BST/GMT switches.
+    """
+    from zoneinfo import ZoneInfo
+    london = ZoneInfo("Europe/London")
+    now = datetime.now(london)
+    dt = now
+    if latest_content_dt is not None:
+        dt = latest_content_dt.astimezone(london)
+        if dt > now:
+            dt = now
     # Format: "Sun 19 Jul, 08:00"
-    return now.strftime("%a %d %b, %H:%M")
+    return dt.strftime("%a %d %b, %H:%M")
 
 
 def load_json_data(filepath):
@@ -528,7 +575,13 @@ def build_site(template_path, data_dir, output_path):
     results_html = render_results(results_data.get("results", []))
     fixtures_html = render_fixtures(results_data.get("fixtures", []))
     reports_html = render_report_items(load_published_reports(data_dir))
-    updated_time = format_updated_timestamp()
+    # "Last updated" = newest item across the sections (session 14), not the
+    # build time. news-history.json is included because it's the merged
+    # rolling archive (kept fresh by CI even when a local news.json is stale).
+    news_history_data = load_json_data(data_dir / "news-history.json")
+    latest_content = newest_content_timestamp(
+        news_data, club_data, youtube_data, news_history_data)
+    updated_time = format_updated_timestamp(latest_content)
 
     # Replace blocks in template
     output = template
